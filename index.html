@@ -554,7 +554,7 @@ let activeFilter = 'all';
 let showOtherSide = false;
 let currentUser = null;   // {id, username, ideology}
 let authMode = 'login';   // 'login' | 'register'
-const API = 'http://localhost:5000/api';
+const API = `${window.location.origin}/api`;
 
 /* ═══════════════════════════════════════════════════
    ROUTING
@@ -720,6 +720,7 @@ async function submitAuth() {
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify(body)
     });
+    if (!res.ok) throw new Error(`auth-${res.status}`);
     const data = await res.json();
     if (data.ok) {
       currentUser = data.user;
@@ -777,11 +778,12 @@ function toggleUserMenu() {
 
 async function saveIdeologyToServer(ideology, scores) {
   try {
-    await fetch(`${API}/ideology`, {
+    const res = await fetch(`${API}/ideology`, {
       method:'POST', credentials:'include',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ideology, quiz_scores: scores})
     });
+    if (!res.ok) throw new Error(`ideology-${res.status}`);
   } catch(e) {}
 }
 
@@ -969,11 +971,12 @@ async function postComment(articleId, articleTitle) {
 
   // Post to server
   try {
-    await fetch(`${API}/comments`, {
+    const res = await fetch(`${API}/comments`, {
       method:'POST', credentials:'include',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({article_id:articleId, article_title:articleTitle, text, username:name})
     });
+    if (!res.ok) throw new Error(`comments-${res.status}`);
   } catch(e){}
 
   // Re-render
@@ -990,11 +993,12 @@ async function postComment(articleId, articleTitle) {
 async function logView(articleId) {
   const article = ARTICLES.find(a=>a.id===articleId);
   try {
-    await fetch(`${API}/view`, {
+    const res = await fetch(`${API}/view`, {
       method:'POST', credentials:'include',
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({article_id:articleId, article_title:article?.title||''})
     });
+    if (!res.ok) throw new Error(`view-${res.status}`);
   } catch(e){}
 }
 
@@ -1069,13 +1073,16 @@ async function submitArticle() {
   const topic=document.getElementById('s-topic').value;
   if(!url||!title||!lean||!topic){alert('Please fill in all required fields.');return;}
   try {
-    await fetch(`${API}/submit`,{method:'POST',credentials:'include',
+    const res = await fetch(`${API}/submit`,{method:'POST',credentials:'include',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({url,title,author:document.getElementById('s-author').value,lean,topic,description:document.getElementById('s-desc').value})
     });
-  } catch(e){}
-  document.getElementById('submit-form-card').style.display='none';
-  document.getElementById('sub-success').style.display='block';
+    if (!res.ok) throw new Error(`submit-${res.status}`);
+    document.getElementById('submit-form-card').style.display='none';
+    document.getElementById('sub-success').style.display='block';
+  } catch(e){
+    alert('The submission service is unavailable right now. Open the live hosted URL to submit successfully.');
+  }
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1089,6 +1096,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Check session with backend
   try {
     const res = await fetch(`${API}/me`, {credentials:'include'});
+    if (!res.ok) throw new Error(`me-${res.status}`);
     const data = await res.json();
     if (data.ok && data.user) {
       currentUser = data.user;
