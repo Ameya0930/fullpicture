@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>The FullPicture — See Both Sides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --left:#1a3a6e;--left-light:#e8eef8;
+  --right:#8b1a1a;--right-light:#f8e8e8;
+  --center:#2c4a2e;--center-light:#e8f0e8;
+  --ink:#111;--ink-2:#444;--ink-3:#888;
+  --paper:#faf8f3;--paper-2:#f0ede4;
+  --rule:#d8d0bc;--accent:#c8a84b;
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-weight:400;line-height:1.6;min-height:100vh}
+a{color:inherit;text-decoration:none}
+button{font-family:var(--font-body);cursor:pointer}
+input,textarea,select{font-family:var(--font-body)}
+
+/* ══════════════════════════════ QUIZ OVERLAY */
+.quiz-overlay{position:fixed;inset:0;background:rgba(8,8,8,0.94);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;transition:opacity .5s}
+.quiz-overlay.hidden{opacity:0;pointer-events:none}
+.quiz-box{background:var(--paper);border-radius:4px;padding:3rem;max-width:580px;width:100%;border-top:6px solid var(--accent);position:relative}
+.quiz-logo{font-family:var(--font-display);font-size:.9rem;font-weight:900;letter-spacing:.12em;color:var(--ink-3);margin-bottom:1.5rem;text-transform:uppercase}
+.quiz-box h2{font-family:var(--font-display);font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:.5rem}
+.quiz-sub{color:var(--ink-2);font-size:.92rem;margin-bottom:2rem;line-height:1.6}
+.quiz-step{display:none}.quiz-step.active{display:block}
+.question{font-family:var(--font-display);font-size:1.1rem;font-weight:700;margin-bottom:1.2rem;line-height:1.4}
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{background:transparent;border:1.5px solid var(--rule);border-radius:3px;padding:14px 18px;font-size:.92rem;color:var(--ink);cursor:pointer;text-align:left;transition:all .15s;line-height:1.4}
+.opt:hover{border-color:var(--accent);background:#fffbf0}
+.opt.selected{border-color:var(--accent);background:#fffbf0;font-weight:500}
+.quiz-progress{display:flex;align-items:center;gap:12px;margin-top:2rem}
+.quiz-bar{flex:1;height:3px;background:var(--rule);border-radius:2px;overflow:hidden}
+.quiz-fill{height:100%;background:var(--accent);width:20%;transition:width .4s ease}
+#quiz-count{font-size:.78rem;color:var(--ink-3);min-width:36px}
+
+/* ══════════════════════════════ AUTH MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(8,8,8,0.7);z-index:8888;display:none;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--paper);border-radius:4px;padding:2.5rem;max-width:420px;width:100%;border-top:5px solid var(--accent);position:relative}
+.modal-box h2{font-family:var(--font-display);font-size:1.8rem;font-weight:700;margin-bottom:.4rem}
+.modal-sub{font-size:.88rem;color:var(--ink-3);margin-bottom:1.6rem}
+.modal-close{position:absolute;top:1rem;right:1.2rem;background:none;border:none;font-size:1.3rem;color:var(--ink-3);cursor:pointer}
+.auth-form{display:flex;flex-direction:column;gap:10px}
+.auth-form input{border:1.5px solid var(--rule);border-radius:3px;padding:10px 14px;font-size:.9rem;background:var(--paper);color:var(--ink);transition:border-color .15s;width:100%}
+.auth-form input:focus{outline:none;border-color:var(--accent)}
+.auth-btn{background:var(--ink);color:white;border:none;padding:12px;font-size:.9rem;font-weight:500;border-radius:3px;margin-top:4px;transition:background .15s}
+.auth-btn:hover{background:#333}
+.auth-switch{text-align:center;font-size:.82rem;color:var(--ink-3);margin-top:12px}
+.auth-switch span{color:var(--accent);cursor:pointer;font-weight:500}
+.auth-err{color:#8b1a1a;font-size:.82rem;display:none;margin-top:4px}
+
+/* ══════════════════════════════ HEADER */
+header{background:var(--paper);border-bottom:1.5px solid var(--ink);position:sticky;top:0;z-index:200}
+.header-top{max-width:1320px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;gap:1.5rem;height:64px}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-pill{font-size:8px;font-weight:600;letter-spacing:.15em;padding:3px 8px;border-radius:2px;text-transform:uppercase;flex-shrink:0}
+.brand-pill.l{color:var(--left);background:var(--left-light)}
+.brand-pill.r{color:var(--right);background:var(--right-light)}
+.brand-name{font-family:var(--font-display);font-size:1.35rem;font-weight:900;letter-spacing:-.01em;color:var(--ink);cursor:pointer;white-space:nowrap}
+nav{display:flex;gap:1.5rem;align-items:center;flex-shrink:0}
+.nav-link{font-size:.8rem;font-weight:500;color:var(--ink-2);letter-spacing:.05em;text-transform:uppercase;transition:color .15s;white-space:nowrap;cursor:pointer;border:none;background:none;padding:0}
+.nav-link:hover,.nav-link.active{color:var(--ink)}
+
+/* SEARCH BAR */
+.search-wrap{flex:1;display:flex;justify-content:flex-end;position:relative;max-width:300px;margin-left:auto}
+.search-input{width:100%;border:1.5px solid var(--rule);border-radius:20px;padding:7px 36px 7px 16px;font-size:.85rem;background:var(--paper-2);color:var(--ink);transition:all .2s;outline:none}
+.search-input:focus{border-color:var(--accent);background:var(--paper);width:100%}
+.search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ink-3);font-size:.9rem;pointer-events:none}
+.search-results-drop{position:absolute;top:calc(100% + 6px);right:0;width:360px;background:var(--paper);border:1.5px solid var(--rule);border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none;z-index:500;max-height:400px;overflow-y:auto}
+.search-results-drop.open{display:block}
+.search-result-item{padding:12px 16px;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .12s}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:var(--paper-2)}
+.sr-meta{display:flex;gap:6px;margin-bottom:4px;align-items:center}
+.sr-title{font-family:var(--font-display);font-size:.92rem;font-weight:700;line-height:1.3;color:var(--ink)}
+.sr-source{font-size:.75rem;color:var(--ink-3);margin-top:2px}
+.search-empty{padding:1.5rem;text-align:center;color:var(--ink-3);font-size:.88rem}
+
+/* HEADER RIGHT CLUSTER */
+.header-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
+
+/* LEANING BADGE */
+.leaning-badge{display:none;align-items:center;gap:7px;padding:6px 12px;border-radius:3px;font-size:.75rem;font-weight:500;border:1.5px solid;cursor:pointer;white-space:nowrap}
+.leaning-badge.left{color:var(--left);background:var(--left-light);border-color:var(--left)}
+.leaning-badge.right{color:var(--right);background:var(--right-light);border-color:var(--right)}
+.leaning-badge.center{color:var(--center);background:var(--center-light);border-color:var(--center)}
+.leaning-badge.visible{display:flex}
+.lb-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* TOGGLE */
+.toggle-wrap{display:flex;align-items:center;gap:7px;background:var(--paper-2);border:1px solid var(--rule);border-radius:3px;padding:5px 10px;flex-shrink:0}
+.toggle-label{font-size:.7rem;font-weight:500;color:var(--ink-2);white-space:nowrap}
+.toggle-switch{position:relative;display:inline-block;width:36px;height:18px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:var(--left);border-radius:18px;cursor:pointer;transition:background .3s}
+.slider::before{content:'';position:absolute;width:12px;height:12px;left:3px;top:3px;background:white;border-radius:50%;transition:transform .3s}
+input:checked + .slider{background:var(--right)}
+input:checked + .slider::before{transform:translateX(18px)}
+
+/* AUTH BUTTON */
+.auth-pill{background:var(--ink);color:white;border:none;padding:7px 16px;border-radius:3px;font-size:.8rem;font-weight:500;letter-spacing:.04em;transition:background .15s;white-space:nowrap}
+.auth-pill:hover{background:#333}
+.user-menu{position:relative}
+.user-pill{display:flex;align-items:center;gap:7px;background:var(--paper-2);border:1px solid var(--rule);border-radius:3px;padding:6px 12px;cursor:pointer;font-size:.8rem;font-weight:500;color:var(--ink-2)}
+.user-pill:hover{border-color:var(--accent)}
+.user-avatar{width:22px;height:22px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white;flex-shrink:0}
+.user-dropdown{position:absolute;top:calc(100%+6px);right:0;background:var(--paper);border:1.5px solid var(--rule);border-radius:4px;min-width:160px;display:none;z-index:500;box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.user-dropdown.open{display:block}
+.user-dropdown button{display:block;width:100%;text-align:left;padding:10px 14px;border:none;background:none;font-size:.85rem;color:var(--ink-2);transition:background .12s}
+.user-dropdown button:hover{background:var(--paper-2);color:var(--ink)}
+.user-dropdown button.danger{color:#8b1a1a}
+
+/* IDEOLOGY STRIP */
+.ideology-strip{background:var(--paper-2);border-top:1px solid var(--rule);padding:5px 2rem;font-size:.78rem;color:var(--ink-2);text-align:center;display:none}
+.ideology-strip.visible{display:block}
+
+/* ══════════════════════════════ TICKER */
+.ticker-bar{background:var(--ink);color:white;padding:7px 0;overflow:hidden;white-space:nowrap}
+.ticker-inner{display:inline-flex;gap:3rem;animation:ticker 40s linear infinite}
+.ticker-inner:hover{animation-play-state:paused}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick-item{font-size:.78rem;letter-spacing:.03em;cursor:pointer;opacity:.85;transition:opacity .15s;flex-shrink:0}
+.tick-item:hover{opacity:1}
+.tick-sep{opacity:.3;margin:0 .5rem}
+
+/* ══════════════════════════════ FILTER BAR */
+.filter-bar{border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:65px;z-index:190}
+.filter-inner{max-width:1320px;margin:0 auto;padding:0 2rem;display:flex;overflow-x:auto;scrollbar-width:none}
+.filter-inner::-webkit-scrollbar{display:none}
+.filter-btn{background:transparent;border:none;border-bottom:3px solid transparent;padding:13px 16px;font-size:.78rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);cursor:pointer;white-space:nowrap;transition:all .15s}
+.filter-btn:hover{color:var(--ink)}
+.filter-btn.active{color:var(--ink);border-bottom-color:var(--accent)}
+
+/* ══════════════════════════════ HOMEPAGE LAYOUT */
+.homepage{max-width:1320px;margin:0 auto;padding:0 2rem 4rem}
+
+/* DATE LINE */
+.date-line{display:flex;align-items:center;justify-content:space-between;padding:1rem 0 .75rem;border-bottom:1.5px solid var(--ink);margin-bottom:1.5rem}
+.date-line .date{font-size:.78rem;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.date-line .tagline{font-size:.78rem;font-style:italic;color:var(--ink-3)}
+
+/* HERO GRID — newspaper front page */
+.hero-grid{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:auto;gap:0;border-bottom:1.5px solid var(--ink);margin-bottom:1.5rem}
+
+/* FEATURED (big left) */
+.featured-card{padding:1.5rem 1.5rem 1.5rem 0;border-right:1.5px solid var(--ink);cursor:pointer}
+.featured-card:hover .feat-title{text-decoration:underline;text-decoration-color:var(--accent)}
+.feat-label{display:inline-flex;align-items:center;gap:6px;margin-bottom:.75rem}
+.feat-eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.feat-title{font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:900;line-height:1.1;margin-bottom:.75rem;color:var(--ink)}
+.feat-deck{font-size:1rem;color:var(--ink-2);line-height:1.6;margin-bottom:1rem}
+.feat-byline{font-size:.8rem;color:var(--ink-3)}
+.feat-badge{background:var(--accent);color:white;font-size:.68rem;font-weight:600;letter-spacing:.1em;padding:3px 8px;border-radius:2px;text-transform:uppercase}
+
+/* SIDEBAR STACK (right column) */
+.sidebar-stack{display:flex;flex-direction:column;padding-left:1.5rem}
+.side-card{padding:1rem 0;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .12s}
+.side-card:last-child{border-bottom:none}
+.side-card:hover .side-title{text-decoration:underline;text-decoration-color:var(--accent)}
+.side-number{font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--rule);line-height:1;margin-bottom:.3rem}
+.side-meta{display:flex;gap:6px;align-items:center;margin-bottom:.35rem}
+.side-title{font-family:var(--font-display);font-size:.95rem;font-weight:700;line-height:1.3;color:var(--ink)}
+.side-source{font-size:.72rem;color:var(--ink-3);margin-top:.2rem}
+
+/* SECTION LABEL */
+.section-label{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:.6rem 0;border-bottom:1px solid var(--rule);margin-bottom:1rem}
+.section-label span{color:var(--accent)}
+
+/* CARD GRID — lower section */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
+.article-card{padding:1.25rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);cursor:pointer;transition:background .15s;display:flex;flex-direction:column;gap:8px}
+.article-card:nth-child(3n){border-right:none}
+.article-card:hover{background:var(--paper-2)}
+.card-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.lean-tag{font-size:8px;font-weight:600;letter-spacing:.12em;padding:3px 7px;border-radius:2px;text-transform:uppercase;flex-shrink:0}
+.lean-tag.left{color:var(--left);background:var(--left-light)}
+.lean-tag.right{color:var(--right);background:var(--right-light)}
+.lean-tag.center{color:var(--center);background:var(--center-light)}
+.topic-tag{font-size:8px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.card-date{font-size:.72rem;color:var(--ink-3);margin-left:auto}
+.card-title{font-family:var(--font-display);font-size:1rem;font-weight:700;line-height:1.3;color:var(--ink)}
+.card-summary{font-size:.84rem;color:var(--ink-2);line-height:1.5;flex:1}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--rule);margin-top:auto}
+.card-source{font-size:.72rem;font-weight:500;color:var(--ink-3)}
+.read-btn{font-size:.72rem;font-weight:500;color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
+.comment-count{font-size:.72rem;color:var(--ink-3)}
+.trending-badge{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:#fff3cd;color:#7a5400;padding:2px 6px;border-radius:2px}
+.empty-state{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--ink-3)}
+.empty-state h3{font-family:var(--font-display);font-size:1.4rem;margin-bottom:.5rem}
+
+/* ══════════════════════════════ ARTICLE PAGE */
+.page{display:none}.page.active{display:block}
+.article-page-wrap{max-width:860px;margin:0 auto;padding:2rem 2rem 5rem}
+.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;font-weight:500;color:var(--ink-3);cursor:pointer;border:none;background:none;padding:0;text-transform:uppercase;letter-spacing:.05em;transition:color .15s;margin-bottom:1.5rem}
+.back-btn:hover{color:var(--ink)}
+.art-meta-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:1rem}
+.art-title{font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;line-height:1.12;margin-bottom:1rem}
+.art-byline{font-size:.88rem;color:var(--ink-2);padding-bottom:1.5rem;border-bottom:1px solid var(--rule);margin-bottom:2rem}
+.ai-box{background:#fffbf0;border:1.5px solid var(--accent);border-radius:4px;padding:1.5rem;margin-bottom:2rem}
+.ai-box-label{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.75rem}
+.ai-box p{font-size:.92rem;color:var(--ink-2);line-height:1.65}
+.ai-loading{display:flex;align-items:center;gap:8px;color:var(--ink-3);font-size:.88rem}
+.spinner{width:14px;height:14px;border:2px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.views-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.view-box{padding:12px;border-radius:3px}
+.view-box.lv{background:var(--left-light);border-left:3px solid var(--left)}
+.view-box.rv{background:var(--right-light);border-left:3px solid var(--right)}
+.view-label{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px}
+.view-box.lv .view-label{color:var(--left)}
+.view-box.rv .view-label{color:var(--right)}
+.view-box p{font-size:.84rem;color:var(--ink-2);line-height:1.5}
+.read-orig-btn{display:inline-block;background:var(--ink);color:white;padding:13px 28px;font-size:.9rem;font-weight:500;letter-spacing:.04em;border-radius:3px;margin-bottom:2.5rem;transition:background .15s;border:none;cursor:pointer}
+.read-orig-btn:hover{background:#333}
+.comments-h{font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-bottom:1.25rem;padding-bottom:.65rem;border-bottom:1.5px solid var(--ink)}
+.comment-form{display:flex;flex-direction:column;gap:9px;margin-bottom:1.75rem}
+.comment-form input,.comment-form textarea{border:1.5px solid var(--rule);border-radius:3px;padding:9px 13px;font-size:.88rem;background:var(--paper);color:var(--ink);transition:border-color .15s;width:100%}
+.comment-form input:focus,.comment-form textarea:focus{outline:none;border-color:var(--accent)}
+.comment-form textarea{min-height:70px;resize:vertical}
+.post-btn{align-self:flex-start;background:var(--ink);color:white;border:none;padding:9px 22px;font-size:.85rem;font-weight:500;border-radius:3px;transition:background .15s}
+.post-btn:hover{background:#333}
+.comment-list{display:flex;flex-direction:column;gap:1rem}
+.comment{padding:.9rem;border:1px solid var(--rule);border-radius:3px;background:var(--paper)}
+.comment-author{font-size:.8rem;font-weight:500;margin-bottom:.35rem}
+.comment-text{font-size:.88rem;color:var(--ink-2);line-height:1.5}
+
+/* ══════════════════════════════ SUBMIT PAGE */
+.submit-wrap{max-width:660px;margin:3rem auto;padding:0 2rem 5rem}
+.submit-wrap h1{font-family:var(--font-display);font-size:2.4rem;font-weight:900;margin-bottom:.65rem}
+.submit-desc{color:var(--ink-2);margin-bottom:2rem;line-height:1.6}
+.form-card{border:1.5px solid var(--rule);border-radius:4px;padding:2rem;display:flex;flex-direction:column;gap:12px}
+.form-card label{font-size:.75rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-2);margin-top:6px}
+.form-card input,.form-card select,.form-card textarea{border:1.5px solid var(--rule);border-radius:3px;padding:9px 13px;font-size:.88rem;background:var(--paper);color:var(--ink);width:100%;transition:border-color .15s}
+.form-card input:focus,.form-card select:focus,.form-card textarea:focus{outline:none;border-color:var(--accent)}
+.lean-opts{display:flex;gap:8px}
+.lean-btn{flex:1;border:1.5px solid var(--rule);border-radius:3px;padding:9px;font-size:.82rem;font-weight:500;cursor:pointer;background:transparent;color:var(--ink-2);transition:all .15s}
+.lean-btn[data-val="left"].active{border-color:var(--left);background:var(--left-light);color:var(--left)}
+.lean-btn[data-val="center"].active{border-color:var(--center);background:var(--center-light);color:var(--center)}
+.lean-btn[data-val="right"].active{border-color:var(--right);background:var(--right-light);color:var(--right)}
+.sub-btn{background:var(--ink);color:white;border:none;padding:13px;font-size:.92rem;font-weight:500;border-radius:3px;margin-top:6px;transition:background .15s}
+.sub-btn:hover{background:#333}
+.sub-note{font-size:.75rem;color:var(--ink-3)}
+.sub-success{background:var(--center-light);border:1.5px solid var(--center);border-radius:4px;padding:1.5rem;color:var(--center);font-weight:500;margin-top:1rem;display:none}
+
+/* ══════════════════════════════ SUBMIT BANNER */
+.promo-strip{background:var(--ink);color:white}
+.promo-inner{max-width:1320px;margin:0 auto;padding:2rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.promo-inner h3{font-family:var(--font-display);font-size:1.3rem;font-weight:700;margin-bottom:.25rem}
+.promo-inner p{font-size:.86rem;color:#aaa}
+.cta-btn{background:var(--accent);color:white;padding:11px 24px;border-radius:3px;font-weight:500;font-size:.86rem;white-space:nowrap;border:none;transition:opacity .15s}
+.cta-btn:hover{opacity:.85}
+
+/* ══════════════════════════════ FOOTER */
+footer{background:var(--paper-2);border-top:1.5px solid var(--rule);padding:2rem;text-align:center}
+.footer-brand{font-family:var(--font-display);font-size:1.15rem;font-weight:900;display:block;margin-bottom:.35rem}
+footer p{font-size:.82rem;color:var(--ink-3)}
+
+/* ══════════════════════════════ RESPONSIVE */
+@media(max-width:1024px){
+  .hero-grid{grid-template-columns:1fr}
+  .featured-card{border-right:none;border-bottom:1.5px solid var(--ink);padding:0 0 1.5rem}
+  .sidebar-stack{padding-left:0;padding-top:1rem;display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .side-card{padding:.75rem .75rem .75rem 0}
+}
+@media(max-width:768px){
+  .card-grid{grid-template-columns:1fr 1fr}
+  .article-card:nth-child(3n){border-right:1px solid var(--rule)}
+  .article-card:nth-child(2n){border-right:none}
+  .search-results-drop{width:280px}
+  .views-split{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .card-grid{grid-template-columns:1fr}
+  .article-card{border-right:none}
+  .header-top{gap:1rem;height:auto;min-height:56px;padding:.5rem 1rem;flex-wrap:wrap}
+  nav{display:none}
+  .brand-pill{display:none}
+  .search-wrap{max-width:100%;order:3;width:100%}
+  .sidebar-stack{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ QUIZ -->
+<div id="quiz-overlay" class="quiz-overlay">
+  <div class="quiz-box">
+    <div class="quiz-logo">The FullPicture</div>
+    <h2>Before you read the news…</h2>
+    <p class="quiz-sub">5 quick questions help us personalise your feed. You can retake anytime.</p>
+    <div id="quiz-content">
+      <div class="quiz-step active" data-step="1">
+        <p class="question">1. The government's primary role should be to:</p>
+        <div class="options">
+          <button class="opt" data-val="L" onclick="pick(this)">Ensure equality and protect vulnerable groups</button>
+          <button class="opt" data-val="C" onclick="pick(this)">Maintain order and protect individual freedoms</button>
+          <button class="opt" data-val="R" onclick="pick(this)">Get out of the way and let markets decide</button>
+        </div>
+      </div>
+      <div class="quiz-step" data-step="2">
+        <p class="question">2. On taxation:</p>
+        <div class="options">
+          <button class="opt" data-val="L" onclick="pick(this)">Wealthy individuals and corporations should pay significantly more</button>
+          <button class="opt" data-val="C" onclick="pick(this)">A balanced system with targeted cuts for growth</button>
+          <button class="opt" data-val="R" onclick="pick(this)">Lower taxes across the board to stimulate the economy</button>
+        </div>
+      </div>
+      <div class="quiz-step" data-step="3">
+        <p class="question">3. On immigration:</p>
+        <div class="options">
+          <button class="opt" data-val="L" onclick="pick(this)">Open, welcoming policies with a path to citizenship</button>
+          <button class="opt" data-val="C" onclick="pick(this)">Controlled immigration with humanitarian exceptions</button>
+          <button class="opt" data-val="R" onclick="pick(this)">Strict border enforcement and reduced inflows</button>
+        </div>
+      </div>
+      <div class="quiz-step" data-step="4">
+        <p class="question">4. Climate change response:</p>
+        <div class="options">
+          <button class="opt" data-val="L" onclick="pick(this)">Aggressive government action and green regulation</button>
+          <button class="opt" data-val="C" onclick="pick(this)">Market-based incentives with some regulation</button>
+          <button class="opt" data-val="R" onclick="pick(this)">Let innovation and the private sector lead</button>
+        </div>
+      </div>
+      <div class="quiz-step" data-step="5">
+        <p class="question">5. On social programs (healthcare, welfare):</p>
+        <div class="options">
+          <button class="opt" data-val="L" onclick="pick(this)">Universal access funded by public spending</button>
+          <button class="opt" data-val="C" onclick="pick(this)">Safety nets for those in need, private options alongside</button>
+          <button class="opt" data-val="R" onclick="pick(this)">Minimal government involvement, personal responsibility</button>
+        </div>
+      </div>
+    </div>
+    <div class="quiz-progress">
+      <div class="quiz-bar"><div id="quiz-fill" class="quiz-fill"></div></div>
+      <span id="quiz-count">1 / 5</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ AUTH MODAL -->
+<div id="auth-modal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <h2 id="auth-title">Sign In</h2>
+    <p class="modal-sub" id="auth-sub">Welcome back. Sign in to save your preferences.</p>
+    <div class="auth-form" id="auth-form">
+      <input type="text" id="auth-username" placeholder="Username" style="display:none"/>
+      <input type="email" id="auth-email" placeholder="Email address"/>
+      <input type="password" id="auth-password" placeholder="Password"/>
+      <p class="auth-err" id="auth-err"></p>
+      <button class="auth-btn" onclick="submitAuth()">Sign In</button>
+    </div>
+    <p class="auth-switch">Don't have an account? <span onclick="toggleAuthMode()">Create one</span></p>
+  </div>
+</div>
+
+<!-- ═══════════════ HEADER -->
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <span class="brand-pill l">LEFT</span>
+      <span class="brand-name" onclick="showPage('home')">The FullPicture</span>
+      <span class="brand-pill r">RIGHT</span>
+    </div>
+    <nav>
+      <button class="nav-link active" id="nav-home" onclick="showPage('home')">Home</button>
+      <button class="nav-link" id="nav-submit" onclick="showPage('submit')">Submit</button>
+      <button class="nav-link" onclick="retakeQuiz()">Retake Quiz</button>
+    </nav>
+
+    <!-- SEARCH -->
+    <div class="search-wrap" id="search-wrap">
+      <input class="search-input" type="text" id="search-input" placeholder="Search articles…" autocomplete="off" oninput="onSearch(this.value)" onblur="closeSearchDelay()"/>
+      <span class="search-icon">🔍</span>
+      <div class="search-results-drop" id="search-drop"></div>
+    </div>
+
+    <div class="header-right">
+      <!-- LEANING BADGE -->
+      <div class="leaning-badge" id="leaning-badge" onclick="retakeQuiz()" title="Your political leaning — click to retake quiz">
+        <span class="lb-dot"></span>
+        <span id="leaning-badge-text">Center</span>
+      </div>
+
+      <!-- PERSPECTIVE TOGGLE -->
+      <div class="toggle-wrap" id="toggle-wrap" style="display:none">
+        <span class="toggle-label">Mine</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="perspective-toggle"/>
+          <span class="slider"></span>
+        </label>
+        <span class="toggle-label">Other</span>
+      </div>
+
+      <!-- AUTH -->
+      <div id="auth-area">
+        <button class="auth-pill" onclick="openAuth('login')">Sign In</button>
+      </div>
+    </div>
+  </div>
+  <div class="ideology-strip" id="ideology-strip">
+    Showing <strong id="showing-label">your perspective</strong> · You lean <strong id="ideology-label">—</strong>
+  </div>
+</header>
+
+<!-- ═══════════════ PAGES -->
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <!-- TICKER -->
+  <div class="ticker-bar" id="ticker-bar"></div>
+
+  <!-- FILTER -->
+  <div class="filter-bar">
+    <div class="filter-inner">
+      <button class="filter-btn active" data-filter="all">All Topics</button>
+      <button class="filter-btn" data-filter="politics">Politics</button>
+      <button class="filter-btn" data-filter="economy">Economy</button>
+      <button class="filter-btn" data-filter="climate">Climate</button>
+      <button class="filter-btn" data-filter="immigration">Immigration</button>
+      <button class="filter-btn" data-filter="healthcare">Healthcare</button>
+      <button class="filter-btn" data-filter="world">World</button>
+    </div>
+  </div>
+
+  <div class="homepage">
+    <!-- DATE / TAGLINE -->
+    <div class="date-line">
+      <span class="date" id="today-date"></span>
+      <span class="tagline">"The truth is rarely left or right — it lives somewhere in between."</span>
+    </div>
+
+    <!-- HERO GRID -->
+    <div class="hero-grid" id="hero-grid"></div>
+
+    <!-- MORE STORIES -->
+    <div class="section-label">More Stories · <span>Trending Today</span></div>
+    <div class="card-grid" id="card-grid"></div>
+  </div>
+
+  <div class="promo-strip">
+    <div class="promo-inner">
+      <div>
+        <h3>Write for The FullPicture</h3>
+        <p>Submit your article — we'll host an AI summary and send readers your way.</p>
+      </div>
+      <button class="cta-btn" onclick="showPage('submit')">Submit an Article →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ARTICLE -->
+<div class="page" id="page-article">
+  <div class="article-page-wrap" id="article-page-wrap"></div>
+</div>
+
+<!-- SUBMIT -->
+<div class="page" id="page-submit">
+  <div class="submit-wrap">
+    <button class="back-btn" onclick="showPage('home')">← Back</button>
+    <h1>Submit Your Article</h1>
+    <p class="submit-desc">Paste your article URL. We'll display an AI summary on The FullPicture and redirect readers to your original piece.</p>
+    <div class="form-card" id="submit-form-card">
+      <label>Article URL *</label>
+      <input type="url" id="s-url" placeholder="https://your-publication.com/article"/>
+      <label>Article Title *</label>
+      <input type="text" id="s-title" placeholder="e.g. Why the new tax bill helps working families"/>
+      <label>Author / Publication</label>
+      <input type="text" id="s-author" placeholder="e.g. Jane Doe · The Independent"/>
+      <label>Political Leaning *</label>
+      <div class="lean-opts">
+        <button class="lean-btn" data-val="left" onclick="selectLean(this)">◀ Left</button>
+        <button class="lean-btn" data-val="center" onclick="selectLean(this)">● Center</button>
+        <button class="lean-btn" data-val="right" onclick="selectLean(this)">Right ▶</button>
+      </div>
+      <input type="hidden" id="s-lean"/>
+      <label>Topic *</label>
+      <select id="s-topic">
+        <option value="">— Select —</option>
+        <option>Politics</option><option>Economy</option><option>Climate</option>
+        <option>Immigration</option><option>Healthcare</option><option>World</option><option>Other</option>
+      </select>
+      <label>Brief Description</label>
+      <textarea id="s-desc" rows="3" placeholder="What is this article about?"></textarea>
+      <button class="sub-btn" onclick="submitArticle()">Submit for Review →</button>
+      <p class="sub-note">Submissions are reviewed within 24 hours.</p>
+    </div>
+    <div class="sub-success" id="sub-success">✓ Submitted! We'll add an AI summary and feature it in the feed.</div>
+  </div>
+</div>
+
+<!-- FOOTER (shared) -->
+<footer>
+  <div style="max-width:1320px;margin:0 auto">
+    <span class="footer-brand">The FullPicture</span>
+    <p>Built to reduce polarisation — one article at a time.</p>
+    <p style="margin-top:6px;font-size:11px;opacity:.4">© 2026 TheFullPicture.com · Open source on GitHub</p>
+  </div>
+</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════ */
+const ARTICLES = [
+  {id:1,title:"New Climate Bill Promises Green Jobs But Critics Warn of Economic Risk",summary:"The landmark legislation aims to accelerate the clean energy transition by investing $400 billion over a decade, creating an estimated 1.5 million jobs in solar, wind, and battery manufacturing.",aiSummary:"This legislation proposes a $400 billion federal investment in clean energy infrastructure over ten years.",lean:"center",topic:"climate",source:"The Guardian",url:"https://theguardian.com",author:"Sarah Okonkwo",date:"April 10, 2026",trending:true,views:4821,
+    leftView:"Progressives see the bill as long overdue but worry the investment targets are too modest to meet climate commitments.",
+    rightView:"Conservative economists warn the spending adds to deficit pressures and risks crowding out private sector innovation.",
+    comments:[{author:"Mark T.",text:"Finally some action — though I worry it's too little too late.",date:"Apr 10"},{author:"James R.",text:"Who's paying for this? The deficit is already out of control.",date:"Apr 11"}]},
+  {id:2,title:"Border Crossings Hit Three-Year Low After New Enforcement Policy",summary:"Federal data shows illegal crossings dropped 62% in March, as the administration's rapid-deportation program reaches full implementation.",aiSummary:"Border crossings dropped 62% in March according to federal figures, following implementation of rapid-deportation measures.",lean:"right",topic:"immigration",source:"Fox News",url:"https://foxnews.com",author:"David Chen",date:"April 9, 2026",trending:true,views:6103,
+    leftView:"Critics argue the policy violates due process rights and leaves asylum seekers without legal recourse.",
+    rightView:"Enforcement-first advocates say the data proves deterrence works and call for making the policy permanent.",
+    comments:[{author:"Linda P.",text:"This is exactly what the country needed — strong border security.",date:"Apr 9"}]},
+  {id:3,title:"Asylum Seekers Face Dangerous Conditions as Deportation Flights Accelerate",summary:"Human rights organisations document overcrowded detention facilities and report that many individuals are being removed without full hearings.",aiSummary:"Human rights groups report deteriorating conditions in immigration detention facilities as rapid deportation policies accelerate.",lean:"left",topic:"immigration",source:"The New York Times",url:"https://nytimes.com",author:"Maria Reyes",date:"April 9, 2026",trending:false,views:3290,
+    leftView:"Advocates frame this as a constitutional crisis requiring immediate judicial intervention.",
+    rightView:"Supporters argue courts are being used to obstruct democratically enacted border security measures.",
+    comments:[]},
+  {id:4,title:"Fed Holds Rates Steady, Signals Caution on Inflation Outlook",summary:"The Federal Reserve left interest rates unchanged for the third consecutive meeting, as officials weigh persistent inflation against slowing economic growth.",aiSummary:"The Fed held rates unchanged amid mixed signals on inflation and economic momentum.",lean:"center",topic:"economy",source:"Bloomberg",url:"https://bloomberg.com",author:"Tom Fischer",date:"April 8, 2026",trending:true,views:5477,
+    leftView:"Progressive economists warn the Fed's caution risks tipping the economy into recession, hurting workers most.",
+    rightView:"Fiscal hawks say the Fed must stay disciplined and avoid cutting prematurely after years of inflationary overshoot.",
+    comments:[{author:"Anita S.",text:"Cautious is the right call. Better safe than sorry.",date:"Apr 8"},{author:"Rob K.",text:"They need to cut NOW before we slide into recession.",date:"Apr 9"}]},
+  {id:5,title:"Universal Basic Income Pilot Shows Promising Results After Two Years",summary:"A study of 3,000 participants receiving $1,000/month found improved mental health, more entrepreneurial activity, and no significant reduction in work hours.",aiSummary:"A two-year UBI pilot found recipients showed better mental health and higher business formation rates.",lean:"left",topic:"economy",source:"Vox",url:"https://vox.com",author:"Priya Nair",date:"April 7, 2026",trending:false,views:2874,
+    leftView:"Supporters say this proves a permanent programme would lift millions out of poverty without reducing workforce participation.",
+    rightView:"Critics raise questions about scalability, the cost to expand nationally, and whether a short pilot captures long-term work disincentives.",
+    comments:[]},
+  {id:6,title:"School Choice Expansion Credited with Driving Up Private Enrolment",summary:"Voucher programmes in 14 states have seen a 38% increase in private school enrolment, as families redirect public funds to alternatives.",aiSummary:"School voucher programmes in 14 states have led to a 38% rise in private school enrolment.",lean:"right",topic:"politics",source:"Wall Street Journal",url:"https://wsj.com",author:"Emily Grant",date:"April 6, 2026",trending:true,views:3918,
+    leftView:"Critics warn vouchers defund public schools, increase segregation, and send taxpayer money to unaccountable institutions.",
+    rightView:"Advocates argue the data proves parental demand for choice and that competition raises quality across the board.",
+    comments:[{author:"Derek N.",text:"Parents should be able to choose. Period.",date:"Apr 6"},{author:"Susan L.",text:"This is defunding public education.",date:"Apr 7"}]},
+  {id:7,title:"Healthcare Costs Hit Record High, Sparking Debate Over Solutions",summary:"Average family premiums topped $28,000 this year, reigniting discussions about Medicare for All, public options, and price reforms.",aiSummary:"US family health insurance premiums have reached a record $28,000 per year, reigniting the healthcare debate.",lean:"center",topic:"healthcare",source:"Kaiser Family Foundation",url:"https://kff.org",author:"Rachel Bloom",date:"April 5, 2026",trending:false,views:2231,
+    leftView:"The left pushes for Medicare for All or a robust public option to negotiate prices directly with providers.",
+    rightView:"The right favours deregulation, increased competition between insurers, and HSAs to give consumers market power.",
+    comments:[]},
+  {id:8,title:"NATO Allies Agree to Raise Defence Spending After Summit",summary:"All 32 member states committed to spending at least 3% of GDP on defence by 2030, marking the highest collective target in history.",aiSummary:"NATO members agreed to a new 3% of GDP defence spending target by 2030.",lean:"right",topic:"world",source:"The Economist",url:"https://economist.com",author:"Hans Mueller",date:"April 4, 2026",trending:false,views:1944,
+    leftView:"Critics question whether military escalation is the right response and argue the funds could address urgent social needs.",
+    rightView:"Conservatives view this as a necessary deterrent to Russian aggression and long-overdue burden-sharing.",
+    comments:[]}
+];
+
+/* ═══════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════ */
+let currentPage = 'home';
+let activeFilter = 'all';
+let showOtherSide = false;
+let currentUser = null;   // {id, username, ideology}
+let authMode = 'login';   // 'login' | 'register'
+const API = 'http://localhost:5000/api';
+
+/* ═══════════════════════════════════════════════════
+   ROUTING
+═══════════════════════════════════════════════════ */
+function showPage(page, articleId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  currentPage = page;
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  const nb = document.getElementById('nav-' + page);
+  if (nb) nb.classList.add('active');
+  if (page === 'article' && articleId) renderArticlePage(articleId);
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════════════════════════
+   QUIZ
+═══════════════════════════════════════════════════ */
+let quizStep = 1; const QUIZ_TOTAL = 5; const quizAnswers = [];
+
+function pick(btn) {
+  btn.closest('.quiz-step').querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  quizAnswers[quizStep-1] = btn.dataset.val;
+  setTimeout(advanceQuiz, 300);
+}
+function advanceQuiz() {
+  if (quizStep < QUIZ_TOTAL) {
+    document.querySelector(`.quiz-step[data-step="${quizStep}"]`).classList.remove('active');
+    quizStep++;
+    document.querySelector(`.quiz-step[data-step="${quizStep}"]`).classList.add('active');
+    document.getElementById('quiz-fill').style.width = `${(quizStep/QUIZ_TOTAL)*100}%`;
+    document.getElementById('quiz-count').textContent = `${quizStep} / ${QUIZ_TOTAL}`;
+  } else { finishQuiz(); }
+}
+function finishQuiz() {
+  const c={L:0,C:0,R:0};
+  quizAnswers.forEach(a=>{ if(a) c[a]++; });
+  const ideology = c.L>=3?'left': c.R>=3?'right':'center';
+  localStorage.setItem('fp_ideology', ideology);
+  const ol = document.getElementById('quiz-overlay');
+  ol.classList.add('hidden');
+  setTimeout(()=>ol.style.display='none', 500);
+  applyIdeology(ideology);
+  if (currentUser) saveIdeologyToServer(ideology, c);
+}
+function retakeQuiz() {
+  quizStep=1; quizAnswers.length=0;
+  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
+  document.querySelector('.quiz-step[data-step="1"]').classList.add('active');
+  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('quiz-fill').style.width='20%';
+  document.getElementById('quiz-count').textContent='1 / 5';
+  const ol=document.getElementById('quiz-overlay');
+  ol.style.display='flex'; setTimeout(()=>ol.classList.remove('hidden'),10);
+}
+
+/* ═══════════════════════════════════════════════════
+   IDEOLOGY UI
+═══════════════════════════════════════════════════ */
+function applyIdeology(ideology) {
+  // Leaning badge top-right
+  const badge = document.getElementById('leaning-badge');
+  const badgeText = document.getElementById('leaning-badge-text');
+  const labelMap = {left:'◀ Left Leaning', center:'● Centrist', right:'Right Leaning ▶'};
+  badge.className = `leaning-badge ${ideology} visible`;
+  badgeText.textContent = labelMap[ideology] || ideology;
+
+  // Strip below header
+  const strip = document.getElementById('ideology-strip');
+  strip.classList.add('visible');
+  document.getElementById('ideology-label').textContent = {left:'Left',center:'Center',right:'Right'}[ideology];
+
+  // Show toggle
+  document.getElementById('toggle-wrap').style.display = 'flex';
+
+  renderHome();
+}
+
+/* ═══════════════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════════════ */
+let searchTimeout;
+function onSearch(val) {
+  clearTimeout(searchTimeout);
+  const drop = document.getElementById('search-drop');
+  if (!val.trim()) { drop.classList.remove('open'); return; }
+  searchTimeout = setTimeout(() => {
+    const q = val.toLowerCase();
+    const results = ARTICLES.filter(a =>
+      a.title.toLowerCase().includes(q) ||
+      a.topic.toLowerCase().includes(q) ||
+      a.source.toLowerCase().includes(q) ||
+      a.summary.toLowerCase().includes(q)
+    ).slice(0,6);
+
+    if (!results.length) {
+      drop.innerHTML = `<div class="search-empty">No articles found for "<strong>${val}</strong>"</div>`;
+    } else {
+      drop.innerHTML = results.map(a => `
+        <div class="search-result-item" onclick="pickSearch(${a.id})">
+          <div class="sr-meta">
+            <span class="lean-tag ${a.lean}">${a.lean==='left'?'◀ L':a.lean==='right'?'R ▶':'● C'}</span>
+            <span class="topic-tag">${a.topic}</span>
+          </div>
+          <div class="sr-title">${highlight(a.title, val)}</div>
+          <div class="sr-source">${a.source} · ${a.date}</div>
+        </div>`).join('');
+    }
+    drop.classList.add('open');
+  }, 200);
+}
+function highlight(text, q) {
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return text.replace(re, '<mark style="background:#fff3cd;border-radius:2px">$1</mark>');
+}
+function pickSearch(id) {
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-drop').classList.remove('open');
+  showPage('article', id);
+}
+function closeSearchDelay() { setTimeout(()=>document.getElementById('search-drop').classList.remove('open'), 200); }
+
+/* ═══════════════════════════════════════════════════
+   AUTH
+═══════════════════════════════════════════════════ */
+function openAuth(mode) {
+  authMode = mode;
+  document.getElementById('auth-modal').classList.add('open');
+  updateAuthUI();
+}
+function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
+function toggleAuthMode() {
+  authMode = authMode==='login'?'register':'login';
+  updateAuthUI();
+}
+function updateAuthUI() {
+  const isReg = authMode==='register';
+  document.getElementById('auth-title').textContent = isReg ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-sub').textContent = isReg ? 'Join to save your ideology and comment.' : 'Welcome back. Sign in to save your preferences.';
+  document.getElementById('auth-username').style.display = isReg ? 'block' : 'none';
+  document.querySelector('.auth-btn').textContent = isReg ? 'Create Account' : 'Sign In';
+  document.querySelector('.auth-switch').innerHTML = isReg
+    ? `Already have an account? <span onclick="toggleAuthMode()">Sign in</span>`
+    : `Don't have an account? <span onclick="toggleAuthMode()">Create one</span>`;
+  document.getElementById('auth-err').style.display = 'none';
+}
+
+async function submitAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  const username = document.getElementById('auth-username').value.trim();
+  const errEl = document.getElementById('auth-err');
+  errEl.style.display='none';
+
+  const body = authMode==='register'
+    ? {username, email, password, ideology: localStorage.getItem('fp_ideology')||'', quiz_scores:{}}
+    : {email, password};
+
+  try {
+    const res = await fetch(`${API}/${authMode}`, {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      currentUser = data.user;
+      closeAuth();
+      renderAuthArea();
+      if (data.user.ideology) applyIdeology(data.user.ideology);
+    } else {
+      errEl.textContent = data.msg || 'Something went wrong.';
+      errEl.style.display='block';
+    }
+  } catch(e) {
+    // Backend not running — store locally anyway
+    if (authMode==='register') {
+      currentUser = {id:Date.now(), username: username||email.split('@')[0], ideology: localStorage.getItem('fp_ideology')||''};
+    } else {
+      currentUser = {id:1, username: email.split('@')[0], ideology: localStorage.getItem('fp_ideology')||''};
+    }
+    closeAuth();
+    renderAuthArea();
+  }
+}
+
+async function logout() {
+  try { await fetch(`${API}/logout`, {method:'POST', credentials:'include'}); } catch(e){}
+  currentUser = null;
+  renderAuthArea();
+  document.getElementById('user-dropdown')?.classList.remove('open');
+}
+
+function renderAuthArea() {
+  const area = document.getElementById('auth-area');
+  if (currentUser) {
+    const initials = currentUser.username.slice(0,2).toUpperCase();
+    area.innerHTML = `
+      <div class="user-menu" id="user-menu">
+        <div class="user-pill" onclick="toggleUserMenu()">
+          <div class="user-avatar">${initials}</div>
+          <span>${currentUser.username}</span>
+          <span style="color:var(--ink-3);font-size:.7rem">▾</span>
+        </div>
+        <div class="user-dropdown" id="user-dropdown">
+          <button onclick="retakeQuiz()">⟳ Retake Quiz</button>
+          <button onclick="showPage('submit')">✏ Submit Article</button>
+          <button class="danger" onclick="logout()">Sign Out</button>
+        </div>
+      </div>`;
+  } else {
+    area.innerHTML = `<button class="auth-pill" onclick="openAuth('login')">Sign In</button>`;
+  }
+}
+
+function toggleUserMenu() {
+  document.getElementById('user-dropdown')?.classList.toggle('open');
+}
+
+async function saveIdeologyToServer(ideology, scores) {
+  try {
+    await fetch(`${API}/ideology`, {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ideology, quiz_scores: scores})
+    });
+  } catch(e) {}
+}
+
+/* ═══════════════════════════════════════════════════
+   TICKER
+═══════════════════════════════════════════════════ */
+function buildTicker() {
+  const trending = ARTICLES.filter(a=>a.trending);
+  const items = [...trending, ...trending].map((a,i) =>
+    `<span class="tick-item" onclick="showPage('article',${a.id})">
+      <span class="lean-tag ${a.lean}" style="font-size:7px;padding:2px 5px;border-radius:2px;margin-right:4px">${a.lean.toUpperCase()}</span>${a.title}
+    </span><span class="tick-sep">·</span>`
+  ).join('');
+  document.getElementById('ticker-bar').innerHTML = `<div class="ticker-inner">${items}</div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   HOME FEED
+═══════════════════════════════════════════════════ */
+function getVisibleLeanings() {
+  const ideology = localStorage.getItem('fp_ideology');
+  if (!ideology) return ['left','center','right'];
+  if (showOtherSide) {
+    return ideology==='left'?['right','center']: ideology==='right'?['left','center']:['left','center','right'];
+  }
+  return ideology==='left'?['left','center']: ideology==='right'?['right','center']:['left','center','right'];
+}
+
+function renderHome() {
+  const leanings = getVisibleLeanings();
+  let filtered = ARTICLES.filter(a => {
+    const topicOk = activeFilter==='all' || a.topic===activeFilter;
+    const leanOk = leanings.includes(a.lean);
+    return topicOk && leanOk;
+  });
+
+  // HERO: featured (trending, most views)
+  const hero = filtered.find(a=>a.trending) || filtered[0];
+  const heroGrid = document.getElementById('hero-grid');
+  const cardGrid = document.getElementById('card-grid');
+
+  if (!hero) {
+    heroGrid.innerHTML = '';
+    cardGrid.innerHTML = `<div class="empty-state"><h3>No articles found</h3><p>Try toggling the perspective or changing the filter.</p></div>`;
+    return;
+  }
+
+  heroGrid.innerHTML = `
+    <div class="featured-card" onclick="openArticle(${hero.id})">
+      <div class="feat-label">
+        <span class="feat-badge">🔥 Top Story</span>
+        <span class="lean-tag ${hero.lean}" style="margin-left:6px">${hero.lean==='left'?'◀ Left':hero.lean==='right'?'Right ▶':'● Center'}</span>
+        <span class="topic-tag" style="margin-left:4px">${hero.topic}</span>
+      </div>
+      <h2 class="feat-title">${hero.title}</h2>
+      <p class="feat-deck">${hero.summary}</p>
+      <p class="feat-byline">${hero.author} · ${hero.source} · ${hero.date} · ${hero.views.toLocaleString()} views</p>
+    </div>
+    <div class="sidebar-stack">
+      ${filtered.filter(a=>a.id!==hero.id).slice(0,4).map((a,i)=>`
+        <div class="side-card" onclick="openArticle(${a.id})">
+          <div class="side-number">${String(i+1).padStart(2,'0')}</div>
+          <div class="side-meta">
+            <span class="lean-tag ${a.lean}">${a.lean==='left'?'◀ L':a.lean==='right'?'R ▶':'● C'}</span>
+            <span class="topic-tag">${a.topic}</span>
+          </div>
+          <div class="side-title">${a.title}</div>
+          <div class="side-source">${a.source} · ${a.views.toLocaleString()} views</div>
+        </div>`).join('')}
+    </div>`;
+
+  // REST
+  const rest = filtered.filter(a=>a.id!==hero.id).slice(4);
+  if (!rest.length) { cardGrid.innerHTML = ''; return; }
+  cardGrid.innerHTML = rest.map(a=>`
+    <div class="article-card" onclick="openArticle(${a.id})">
+      <div class="card-meta">
+        ${a.trending?`<span class="trending-badge">🔥 Trending</span>`:''}
+        <span class="lean-tag ${a.lean}">${a.lean==='left'?'◀ Left':a.lean==='right'?'Right ▶':'● Center'}</span>
+        <span class="topic-tag">${a.topic}</span>
+        <span class="card-date">${a.date}</span>
+      </div>
+      <h3 class="card-title">${a.title}</h3>
+      <p class="card-summary">${a.summary}</p>
+      <div class="card-footer">
+        <span class="card-source">${a.source}</span>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span class="comment-count">💬 ${(a.comments.length + loadComments(a.id).length)}</span>
+          <span class="read-btn">Read →</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openArticle(id) {
+  logView(id);
+  showPage('article', id);
+}
+
+/* ═══════════════════════════════════════════════════
+   ARTICLE PAGE
+═══════════════════════════════════════════════════ */
+function renderArticlePage(id) {
+  const article = ARTICLES.find(a=>a.id===id);
+  const wrap = document.getElementById('article-page-wrap');
+  if (!article) { wrap.innerHTML='<p style="padding:4rem;text-align:center">Article not found.</p>'; return; }
+
+  document.title = `${article.title} — The FullPicture`;
+
+  const allComments = [...article.comments, ...loadComments(id)];
+
+  wrap.innerHTML = `
+    <button class="back-btn" onclick="showPage('home')">← Back to Feed</button>
+    <div class="art-meta-row">
+      <span class="lean-tag ${article.lean}">${article.lean==='left'?'◀ Left':article.lean==='right'?'Right ▶':'● Center'}</span>
+      <span class="topic-tag">${article.topic}</span>
+      <span style="font-size:.75rem;color:var(--ink-3)">${article.date}</span>
+      <span style="font-size:.75rem;color:var(--ink-3);margin-left:auto">${article.views.toLocaleString()} views</span>
+    </div>
+    <h1 class="art-title">${article.title}</h1>
+    <p class="art-byline">By <strong>${article.author}</strong> · ${article.source}</p>
+
+    <div class="ai-box">
+      <div class="ai-box-label">🤖 AI Summary — Both Sides</div>
+      <div id="ai-summary-text">
+        <div class="ai-loading"><div class="spinner"></div> Generating summary…</div>
+      </div>
+    </div>
+
+    <a href="${article.url}" target="_blank" rel="noopener" class="read-orig-btn">
+      Read Full Article at ${article.source} →
+    </a>
+
+    <div class="comments-section">
+      <h3 class="comments-h" id="comment-heading">Discussion (${allComments.length})</h3>
+      <div class="comment-form">
+        <input type="text" id="c-name" placeholder="${currentUser ? currentUser.username : 'Your name'}" ${currentUser?'readonly':''}/>
+        <textarea id="c-text" placeholder="Share your thoughts on this article…"></textarea>
+        <button class="post-btn" onclick="postComment(${article.id}, '${article.title.replace(/'/g,"\\'")}')">Post Comment</button>
+      </div>
+      <div class="comment-list" id="comment-list">
+        ${renderCommentList(allComments)}
+      </div>
+    </div>`;
+
+  fetchAISummary(article);
+}
+
+function renderCommentList(comments) {
+  if (!comments.length) return `<p style="color:var(--ink-3);font-size:.88rem">No comments yet. Be the first!</p>`;
+  return comments.map(c=>`
+    <div class="comment">
+      <div class="comment-author">${c.author} <span style="font-weight:400;color:var(--ink-3)">· ${c.date}</span></div>
+      <p class="comment-text">${c.text}</p>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   COMMENTS — local + server
+═══════════════════════════════════════════════════ */
+function loadComments(articleId) {
+  try { return JSON.parse(localStorage.getItem(`fp_comments_${articleId}`) || '[]'); } catch(e){ return []; }
+}
+function saveCommentLocal(articleId, comment) {
+  const existing = loadComments(articleId);
+  existing.push(comment);
+  localStorage.setItem(`fp_comments_${articleId}`, JSON.stringify(existing));
+}
+
+async function postComment(articleId, articleTitle) {
+  const nameEl = document.getElementById('c-name');
+  const textEl = document.getElementById('c-text');
+  const name = (currentUser ? currentUser.username : nameEl.value.trim()) || 'Anonymous';
+  const text = textEl.value.trim();
+  if (!text) { alert('Please enter a comment.'); return; }
+
+  const comment = {
+    author: name, text,
+    date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+  };
+
+  // Save locally
+  saveCommentLocal(articleId, comment);
+  textEl.value = '';
+
+  // Post to server
+  try {
+    await fetch(`${API}/comments`, {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({article_id:articleId, article_title:articleTitle, text, username:name})
+    });
+  } catch(e){}
+
+  // Re-render
+  const article = ARTICLES.find(a=>a.id===articleId);
+  const allComments = [...(article?.comments||[]), ...loadComments(articleId)];
+  document.getElementById('comment-list').innerHTML = renderCommentList(allComments);
+  const h = document.getElementById('comment-heading');
+  if(h) h.textContent = `Discussion (${allComments.length})`;
+}
+
+/* ═══════════════════════════════════════════════════
+   VIEW LOGGING
+═══════════════════════════════════════════════════ */
+async function logView(articleId) {
+  const article = ARTICLES.find(a=>a.id===articleId);
+  try {
+    await fetch(`${API}/view`, {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({article_id:articleId, article_title:article?.title||''})
+    });
+  } catch(e){}
+}
+
+/* ═══════════════════════════════════════════════════
+   AI SUMMARY
+═══════════════════════════════════════════════════ */
+async function fetchAISummary(article) {
+  const box = document.getElementById('ai-summary-text');
+  if (!box) return;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        messages:[{role:'user', content:`You are a balanced political journalist. Summarise this article in 3 sentences, then give one clear sentence each from the left and right perspectives. Be fair and non-partisan.
+
+Title: ${article.title}
+Summary: ${article.summary}
+Source: ${article.source}
+
+Respond EXACTLY in this format:
+SUMMARY: [3 sentences]
+LEFT VIEW: [1 sentence]
+RIGHT VIEW: [1 sentence]`}]
+      })
+    });
+    const data = await res.json();
+    formatAISummary(data.content?.[0]?.text || '', article);
+  } catch(e) {
+    formatAISummary('', article);
+  }
+}
+
+function formatAISummary(text, article) {
+  const box = document.getElementById('ai-summary-text');
+  if (!box) return;
+  const sm = text.match(/SUMMARY:\s*([\s\S]+?)(?=LEFT VIEW:|$)/i);
+  const lm = text.match(/LEFT VIEW:\s*([\s\S]+?)(?=RIGHT VIEW:|$)/i);
+  const rm = text.match(/RIGHT VIEW:\s*([\s\S]+?)$/i);
+
+  const summary = sm?sm[1].trim() : article.aiSummary;
+  const leftV = lm?lm[1].trim() : article.leftView;
+  const rightV = rm?rm[1].trim() : article.rightView;
+
+  box.innerHTML = `
+    <p style="margin-bottom:1rem;font-size:.92rem;color:var(--ink-2);line-height:1.65">${summary}</p>
+    <div class="views-split">
+      <div class="view-box lv">
+        <div class="view-label">◀ Left View</div>
+        <p>${leftV}</p>
+      </div>
+      <div class="view-box rv">
+        <div class="view-label">Right ▶ View</div>
+        <p>${rightV}</p>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════════════
+   SUBMIT
+═══════════════════════════════════════════════════ */
+function selectLean(el) {
+  document.querySelectorAll('.lean-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('s-lean').value = el.dataset.val;
+}
+async function submitArticle() {
+  const url=document.getElementById('s-url').value;
+  const title=document.getElementById('s-title').value;
+  const lean=document.getElementById('s-lean').value;
+  const topic=document.getElementById('s-topic').value;
+  if(!url||!title||!lean||!topic){alert('Please fill in all required fields.');return;}
+  try {
+    await fetch(`${API}/submit`,{method:'POST',credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({url,title,author:document.getElementById('s-author').value,lean,topic,description:document.getElementById('s-desc').value})
+    });
+  } catch(e){}
+  document.getElementById('submit-form-card').style.display='none';
+  document.getElementById('sub-success').style.display='block';
+}
+
+/* ═══════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', async () => {
+  // Date
+  document.getElementById('today-date').textContent =
+    new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
+
+  // Check session with backend
+  try {
+    const res = await fetch(`${API}/me`, {credentials:'include'});
+    const data = await res.json();
+    if (data.ok && data.user) {
+      currentUser = data.user;
+      renderAuthArea();
+      if (data.user.ideology) {
+        localStorage.setItem('fp_ideology', data.user.ideology);
+      }
+    }
+  } catch(e) { /* backend offline — that's fine */ }
+
+  // Ideology from localStorage
+  const stored = localStorage.getItem('fp_ideology');
+  if (stored) {
+    document.getElementById('quiz-overlay').style.display = 'none';
+    applyIdeology(stored);
+  } else {
+    renderHome(); // render without ideology
+  }
+
+  buildTicker();
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      renderHome();
+    });
+  });
+
+  // Perspective toggle
+  document.getElementById('perspective-toggle').addEventListener('change', e => {
+    showOtherSide = e.target.checked;
+    document.getElementById('showing-label').textContent = showOtherSide ? 'the other side' : 'your perspective';
+    renderHome();
+  });
+
+  // Close user dropdown on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#user-menu')) {
+      document.getElementById('user-dropdown')?.classList.remove('open');
+    }
+    if (!e.target.closest('#search-wrap')) {
+      document.getElementById('search-drop').classList.remove('open');
+    }
+  });
+});
+</script>
+</body>
+</html>
