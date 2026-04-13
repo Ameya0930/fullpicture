@@ -19,7 +19,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
-body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-weight:400;line-height:1.6;min-height:100vh}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-weight:500;line-height:1.6;min-height:100vh}
 a{color:inherit;text-decoration:none}
 button{font-family:var(--font-body);cursor:pointer}
 input,textarea,select{font-family:var(--font-body)}
@@ -60,7 +60,7 @@ input,textarea,select{font-family:var(--font-body)}
 
 /* ══════════════════════════════ HEADER */
 header{background:var(--paper);border-bottom:1.5px solid var(--ink);position:sticky;top:0;z-index:200}
-.header-top{max-width:1320px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;gap:1.5rem;height:64px}
+.header-top{max-width:none;margin:0;padding:0 2rem 0 0;display:flex;align-items:center;gap:1.5rem;height:64px}
 .brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .brand-pill{font-size:8px;font-weight:600;letter-spacing:.15em;padding:3px 8px;border-radius:2px;text-transform:uppercase;flex-shrink:0}
 .brand-pill.l{color:var(--left);background:var(--left-light)}
@@ -120,8 +120,8 @@ input:checked + .slider::before{transform:translateX(18px)}
 .user-dropdown button.danger{color:#8b1a1a}
 
 /* IDEOLOGY STRIP */
-.ideology-strip{background:var(--paper-2);border-top:1px solid var(--rule);padding:5px 2rem;font-size:.78rem;color:var(--ink-2);text-align:center;display:none}
-.ideology-strip.visible{display:block}
+.ideology-strip{display:none !important}
+.ideology-strip.visible{display:none !important}
 
 /* ══════════════════════════════ HOME INTRO */
 .home-intro{display:grid;grid-template-columns:1.35fr .95fr;gap:1rem;align-items:start;padding:1.5rem 0 1.25rem;border-bottom:1px solid var(--rule);margin-bottom:1.5rem}
@@ -368,12 +368,12 @@ footer p{font-size:.82rem;color:var(--ink-3)}
 <header>
   <div class="header-top">
     <div class="brand">
+      <span class="brand-name" onclick="goHome()">The FullPicture</span>
       <span class="brand-pill l">LEFT</span>
-      <span class="brand-name" onclick="showPage('home')">The FullPicture</span>
       <span class="brand-pill r">RIGHT</span>
     </div>
     <nav>
-      <button class="nav-link active" id="nav-home" onclick="showPage('home')">Home</button>
+      <button class="nav-link active" id="nav-home" onclick="goHome()">Home</button>
       <button class="nav-link" id="nav-submit" onclick="showPage('submit')">Submit</button>
       <button class="nav-link" onclick="retakeQuiz()">Retake Quiz</button>
     </nav>
@@ -473,7 +473,7 @@ footer p{font-size:.82rem;color:var(--ink-3)}
 <!-- SUBMIT -->
 <div class="page" id="page-submit">
   <div class="submit-wrap">
-    <button class="back-btn" onclick="showPage('home')">← Back</button>
+    <button class="back-btn" onclick="goHome()">← Back</button>
     <h1>Submit Your Article</h1>
     <p class="submit-desc">Paste your article URL. We'll display an AI summary on The FullPicture and redirect readers to your original piece.</p>
     <div class="form-card" id="submit-form-card">
@@ -615,6 +615,15 @@ function showPage(page, articleId) {
   if (nb) nb.classList.add('active');
   if (page === 'article' && articleId) renderArticlePage(articleId);
   window.scrollTo(0,0);
+}
+
+function goHome() {
+  activeFilter = 'all';
+  showPage('home');
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === 'all');
+  });
+  renderHome();
 }
 
 /* ═══════════════════════════════════════════════════
@@ -958,7 +967,7 @@ function renderArticlePage(id) {
   const allComments = [...article.comments, ...loadComments(id)];
 
   wrap.innerHTML = `
-    <button class="back-btn" onclick="showPage('home')">← Back to Feed</button>
+    <button class="back-btn" onclick="goHome()">← Back to Feed</button>
     <div class="art-meta-row">
       <span class="lean-tag ${article.lean}">${article.lean==='left'?'◀ Left':article.lean==='right'?'Right ▶':'● Center'}</span>
       <span class="topic-tag">${article.topic}</span>
