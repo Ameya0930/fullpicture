@@ -1,7 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 
-PROJECT_DIR="/Users/ameyakulkarni/Desktop/fullpicture"
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 RUN_DIR="$PROJECT_DIR/.run"
 LOG_DIR="$PROJECT_DIR/logs"
 SERVER_PORT="8000"
