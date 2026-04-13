@@ -8,30 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --left:#1f4ed8;--left-light:#e8efff;
-  --right:#b4233c;--right-light:#fdecef;
-  --center:#0f766e;--center-light:#e6f7f5;
-  --ink:#0f172a;--ink-2:#334155;--ink-3:#64748b;
-  --paper:#f8fafc;--paper-2:#eef2f7;
-  --rule:#d3dbe6;--accent:#7c3aed;
+  --left:#66d9ef;--left-light:#22343b;
+  --right:#f92672;--right-light:#3c2230;
+  --center:#a6e22e;--center-light:#2d3a22;
+  --ink:#f8f8f2;--ink-2:#cfcfc2;--ink-3:#a6a69c;
+  --paper:#272822;--paper-2:#1e1f1c;
+  --rule:#3e3d32;--accent:#fd971f;
   --font-display:'Playfair Display',Georgia,serif;
   --font-body:'DM Sans',system-ui,sans-serif;
-}
-body[data-theme="warm"]{
-  --left:#7c3aed;--left-light:#f3e8ff;
-  --right:#c2410c;--right-light:#ffedd5;
-  --center:#b45309;--center-light:#fef3c7;
-  --ink:#2a1a11;--ink-2:#5b3b2a;--ink-3:#8b6a5a;
-  --paper:#fff8ef;--paper-2:#f8eadb;
-  --rule:#e5cdb3;--accent:#d97706;
-}
-body[data-theme="dark"]{
-  --left:#60a5fa;--left-light:#1d2b44;
-  --right:#fb7185;--right-light:#3d1f2a;
-  --center:#34d399;--center-light:#1a3a33;
-  --ink:#e2e8f0;--ink-2:#cbd5e1;--ink-3:#94a3b8;
-  --paper:#0f172a;--paper-2:#111c34;
-  --rule:#263247;--accent:#a78bfa;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth}
@@ -105,7 +89,6 @@ nav{display:flex;gap:1.5rem;align-items:center;flex-shrink:0}
 
 /* HEADER RIGHT CLUSTER */
 .header-right{display:flex;align-items:center;gap:12px;flex-shrink:0}
-.theme-select{border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);border-radius:3px;padding:6px 8px;font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 
 /* LEANING BADGE */
 .leaning-badge{display:none;align-items:center;gap:7px;padding:6px 12px;border-radius:3px;font-size:.75rem;font-weight:500;border:1.5px solid;cursor:pointer;white-space:nowrap}
@@ -393,11 +376,6 @@ footer p{font-size:.82rem;color:var(--ink-3)}
     </div>
 
     <div class="header-right">
-      <select id="theme-select" class="theme-select" aria-label="Theme selector">
-        <option value="cool">Cool</option>
-        <option value="warm">Warm</option>
-        <option value="dark">Dark</option>
-      </select>
       <!-- LEANING BADGE -->
       <div class="leaning-badge" id="leaning-badge" onclick="retakeQuiz()" title="Your political leaning — click to retake quiz">
         <span class="lb-dot"></span>
@@ -638,18 +616,7 @@ let currentUser = null;   // {id, username, ideology}
 let authMode = 'login';   // 'login' | 'register'
 let mustAuthBeforeQuiz = false;
 let activeSort = 'newest';
-let activeTheme = 'cool';
 const API = `${window.location.origin}/api`;
-
-function applyTheme(theme) {
-  activeTheme = ['cool','warm','dark'].includes(theme) ? theme : 'cool';
-  const body = document.body;
-  body.removeAttribute('data-theme');
-  if (activeTheme !== 'cool') body.setAttribute('data-theme', activeTheme);
-  localStorage.setItem('fp_theme', activeTheme);
-  const sel = document.getElementById('theme-select');
-  if (sel) sel.value = activeTheme;
-}
 
 function getSavedIds() {
   try { return JSON.parse(localStorage.getItem('fp_saved') || '[]'); } catch(e) { return []; }
@@ -1338,7 +1305,6 @@ async function submitArticle() {
    BOOT
 ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async () => {
-  applyTheme(localStorage.getItem('fp_theme') || 'cool');
   renderQuizStep();
   document.getElementById('quiz-count').textContent = `1 / ${QUIZ_TOTAL}`;
   document.getElementById('quiz-fill').style.width = `${(1/QUIZ_TOTAL)*100}%`;
@@ -1395,11 +1361,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     activeSort = e.target.value;
     renderHome();
   });
-  document.getElementById('theme-select').addEventListener('change', e => {
-    applyTheme(e.target.value);
-    showToast(`Theme: ${e.target.value}`);
-  });
-
   window.addEventListener('scroll', () => {
     updateReadProgress();
     const toTop = document.getElementById('to-top');
