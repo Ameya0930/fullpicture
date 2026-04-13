@@ -297,52 +297,11 @@ footer p{font-size:.82rem;color:var(--ink-3)}
   <div class="quiz-box">
     <div class="quiz-logo">The FullPicture</div>
     <h2>Before you read the news…</h2>
-    <p class="quiz-sub">5 quick questions help us personalise your feed. You can retake anytime.</p>
-    <div id="quiz-content">
-      <div class="quiz-step active" data-step="1">
-        <p class="question">1. The government's primary role should be to:</p>
-        <div class="options">
-          <button class="opt" data-val="L" onclick="pick(this)">Ensure equality and protect vulnerable groups</button>
-          <button class="opt" data-val="C" onclick="pick(this)">Maintain order and protect individual freedoms</button>
-          <button class="opt" data-val="R" onclick="pick(this)">Get out of the way and let markets decide</button>
-        </div>
-      </div>
-      <div class="quiz-step" data-step="2">
-        <p class="question">2. On taxation:</p>
-        <div class="options">
-          <button class="opt" data-val="L" onclick="pick(this)">Wealthy individuals and corporations should pay significantly more</button>
-          <button class="opt" data-val="C" onclick="pick(this)">A balanced system with targeted cuts for growth</button>
-          <button class="opt" data-val="R" onclick="pick(this)">Lower taxes across the board to stimulate the economy</button>
-        </div>
-      </div>
-      <div class="quiz-step" data-step="3">
-        <p class="question">3. On immigration:</p>
-        <div class="options">
-          <button class="opt" data-val="L" onclick="pick(this)">Open, welcoming policies with a path to citizenship</button>
-          <button class="opt" data-val="C" onclick="pick(this)">Controlled immigration with humanitarian exceptions</button>
-          <button class="opt" data-val="R" onclick="pick(this)">Strict border enforcement and reduced inflows</button>
-        </div>
-      </div>
-      <div class="quiz-step" data-step="4">
-        <p class="question">4. Climate change response:</p>
-        <div class="options">
-          <button class="opt" data-val="L" onclick="pick(this)">Aggressive government action and green regulation</button>
-          <button class="opt" data-val="C" onclick="pick(this)">Market-based incentives with some regulation</button>
-          <button class="opt" data-val="R" onclick="pick(this)">Let innovation and the private sector lead</button>
-        </div>
-      </div>
-      <div class="quiz-step" data-step="5">
-        <p class="question">5. On social programs (healthcare, welfare):</p>
-        <div class="options">
-          <button class="opt" data-val="L" onclick="pick(this)">Universal access funded by public spending</button>
-          <button class="opt" data-val="C" onclick="pick(this)">Safety nets for those in need, private options alongside</button>
-          <button class="opt" data-val="R" onclick="pick(this)">Minimal government involvement, personal responsibility</button>
-        </div>
-      </div>
-    </div>
+    <p class="quiz-sub">20 in-depth questions help us personalise your feed. You can retake anytime.</p>
+    <div id="quiz-content"></div>
     <div class="quiz-progress">
       <div class="quiz-bar"><div id="quiz-fill" class="quiz-fill"></div></div>
-      <span id="quiz-count">1 / 5</span>
+      <span id="quiz-count">1 / 20</span>
     </div>
   </div>
 </div>
@@ -601,6 +560,7 @@ let activeFilter = 'all';
 let showOtherSide = false;
 let currentUser = null;   // {id, username, ideology}
 let authMode = 'login';   // 'login' | 'register'
+let mustAuthBeforeQuiz = false;
 const API = `${window.location.origin}/api`;
 
 /* ═══════════════════════════════════════════════════
@@ -629,7 +589,43 @@ function goHome() {
 /* ═══════════════════════════════════════════════════
    QUIZ
 ═══════════════════════════════════════════════════ */
-let quizStep = 1; const QUIZ_TOTAL = 5; const quizAnswers = [];
+const QUIZ_QUESTIONS = [
+  {q:"The government's primary role should be to:",o:[["Ensure equality and protect vulnerable groups","L"],["Maintain order and protect individual freedoms","C"],["Stay limited and let markets decide","R"]]},
+  {q:"On taxation policy:",o:[["Higher taxes on top earners should fund social programs","L"],["Moderate, targeted adjustments are best","C"],["Lower taxes broadly to drive growth","R"]]},
+  {q:"Healthcare is best improved by:",o:[["Expanding public coverage and regulation","L"],["A mixed public-private system with reforms","C"],["Market competition and consumer choice","R"]]},
+  {q:"Climate policy should prioritize:",o:[["Rapid emissions cuts through strong regulation","L"],["Practical transition with incentives and standards","C"],["Innovation-led change with minimal mandates","R"]]},
+  {q:"Immigration policy should focus on:",o:[["Broader legal pathways and protections","L"],["Secure borders with humane legal routes","C"],["Strict enforcement and reduced immigration","R"]]},
+  {q:"Student debt should be addressed by:",o:[["Large-scale forgiveness and free public college","L"],["Targeted relief and cost controls","C"],["Personal repayment responsibility","R"]]},
+  {q:"Labor policy should favor:",o:[["Stronger unions and worker protections","L"],["Balanced worker protections with business flexibility","C"],["Less regulation to encourage hiring","R"]]},
+  {q:"Housing affordability is best solved with:",o:[["Public investment and stronger tenant protections","L"],["Zoning reform plus targeted support","C"],["Cutting regulation to increase private supply","R"]]},
+  {q:"Criminal justice reform should emphasize:",o:[["Rehabilitation and reducing incarceration","L"],["Accountability with measured reform","C"],["Tough sentencing and strong enforcement","R"]]},
+  {q:"Gun policy should be:",o:[["Significantly stricter with broad restrictions","L"],["Background checks plus limited safeguards","C"],["Focused on rights with minimal new limits","R"]]},
+  {q:"Energy security is best achieved through:",o:[["Accelerating renewables and phasing down fossil fuels","L"],["Diversified energy mix and gradual transition","C"],["Expanding domestic oil and gas production","R"]]},
+  {q:"Government spending should:",o:[["Expand for public services and safety nets","L"],["Stay disciplined while funding priorities","C"],["Be reduced to limit government size","R"]]},
+  {q:"On international trade:",o:[["Tie trade to labor and environmental standards","L"],["Use selective agreements and safeguards","C"],["Prioritize open trade and fewer barriers","R"]]},
+  {q:"Tech regulation should:",o:[["Aggressively curb monopolies and data abuse","L"],["Set clear guardrails without stifling growth","C"],["Avoid heavy regulation that limits innovation","R"]]},
+  {q:"Education policy should prioritize:",o:[["Public school investment and universal access","L"],["Accountability plus school support","C"],["School choice and parent-led competition","R"]]},
+  {q:"On reproductive rights:",o:[["Protect broad legal access nationally","L"],["Keep legal access with some limits","C"],["Allow stricter limits set by states","R"]]},
+  {q:"The best approach to poverty is:",o:[["Expanded cash assistance and public benefits","L"],["Targeted support with pathways to work","C"],["Economic growth and local/private solutions","R"]]},
+  {q:"How should misinformation be handled?",o:[["Platforms should enforce strong moderation","L"],["Use transparent standards and independent oversight","C"],["Protect speech with minimal platform intervention","R"]]},
+  {q:"Federal vs state power:",o:[["Federal leadership is needed for equity","L"],["Shared responsibility works best","C"],["States should have greater autonomy","R"]]},
+  {q:"Overall, public policy should:",o:[["Actively reduce inequality even with larger government","L"],["Balance fairness, growth, and freedom","C"],["Prioritize liberty, markets, and limited government","R"]]}
+];
+let quizStep = 1;
+const QUIZ_TOTAL = QUIZ_QUESTIONS.length;
+const quizAnswers = [];
+
+function renderQuizStep() {
+  const host = document.getElementById('quiz-content');
+  const step = QUIZ_QUESTIONS[quizStep - 1];
+  host.innerHTML = `
+    <div class="quiz-step active" data-step="${quizStep}">
+      <p class="question">${quizStep}. ${step.q}</p>
+      <div class="options">
+        ${step.o.map(([label, val]) => `<button class="opt" data-val="${val}" onclick="pick(this)">${label}</button>`).join('')}
+      </div>
+    </div>`;
+}
 
 function pick(btn) {
   btn.closest('.quiz-step').querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
@@ -639,9 +635,8 @@ function pick(btn) {
 }
 function advanceQuiz() {
   if (quizStep < QUIZ_TOTAL) {
-    document.querySelector(`.quiz-step[data-step="${quizStep}"]`).classList.remove('active');
     quizStep++;
-    document.querySelector(`.quiz-step[data-step="${quizStep}"]`).classList.add('active');
+    renderQuizStep();
     document.getElementById('quiz-fill').style.width = `${(quizStep/QUIZ_TOTAL)*100}%`;
     document.getElementById('quiz-count').textContent = `${quizStep} / ${QUIZ_TOTAL}`;
   } else { finishQuiz(); }
@@ -649,7 +644,7 @@ function advanceQuiz() {
 function finishQuiz() {
   const c={L:0,C:0,R:0};
   quizAnswers.forEach(a=>{ if(a) c[a]++; });
-  const ideology = c.L>=3?'left': c.R>=3?'right':'center';
+  const ideology = c.L >= c.R + 3 ? 'left' : c.R >= c.L + 3 ? 'right' : 'center';
   localStorage.setItem('fp_ideology', ideology);
   const ol = document.getElementById('quiz-overlay');
   ol.classList.add('hidden');
@@ -659,11 +654,9 @@ function finishQuiz() {
 }
 function retakeQuiz() {
   quizStep=1; quizAnswers.length=0;
-  document.querySelectorAll('.quiz-step').forEach(s=>s.classList.remove('active'));
-  document.querySelector('.quiz-step[data-step="1"]').classList.add('active');
-  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
-  document.getElementById('quiz-fill').style.width='20%';
-  document.getElementById('quiz-count').textContent='1 / 5';
+  renderQuizStep();
+  document.getElementById('quiz-fill').style.width=`${(1/QUIZ_TOTAL)*100}%`;
+  document.getElementById('quiz-count').textContent=`1 / ${QUIZ_TOTAL}`;
   const ol=document.getElementById('quiz-overlay');
   ol.style.display='flex'; setTimeout(()=>ol.classList.remove('hidden'),10);
 }
@@ -742,7 +735,10 @@ function openAuth(mode) {
   document.getElementById('auth-modal').classList.add('open');
   updateAuthUI();
 }
-function closeAuth() { document.getElementById('auth-modal').classList.remove('open'); }
+function closeAuth(force = false) {
+  if (mustAuthBeforeQuiz && !force) return;
+  document.getElementById('auth-modal').classList.remove('open');
+}
 function toggleAuthMode() {
   authMode = authMode==='login'?'register':'login';
   updateAuthUI();
@@ -750,13 +746,16 @@ function toggleAuthMode() {
 function updateAuthUI() {
   const isReg = authMode==='register';
   document.getElementById('auth-title').textContent = isReg ? 'Create Account' : 'Sign In';
-  document.getElementById('auth-sub').textContent = isReg ? 'Join to save your ideology and comment.' : 'Welcome back. Sign in to save your preferences.';
+  document.getElementById('auth-sub').textContent = mustAuthBeforeQuiz
+    ? 'Please sign in first, then we will begin your 20-question quiz.'
+    : (isReg ? 'Join to save your ideology and comment.' : 'Welcome back. Sign in to save your preferences.');
   document.getElementById('auth-username').style.display = isReg ? 'block' : 'none';
   document.querySelector('.auth-btn').textContent = isReg ? 'Create Account' : 'Sign In';
   document.querySelector('.auth-switch').innerHTML = isReg
     ? `Already have an account? <span onclick="toggleAuthMode()">Sign in</span>`
     : `Don't have an account? <span onclick="toggleAuthMode()">Create one</span>`;
   document.getElementById('auth-err').style.display = 'none';
+  document.querySelector('.modal-close').style.display = mustAuthBeforeQuiz ? 'none' : 'block';
 }
 
 async function submitAuth() {
@@ -780,9 +779,15 @@ async function submitAuth() {
     const data = await res.json();
     if (data.ok) {
       currentUser = data.user;
-      closeAuth();
+      mustAuthBeforeQuiz = false;
+      closeAuth(true);
       renderAuthArea();
-      if (data.user.ideology) applyIdeology(data.user.ideology);
+      if (data.user.ideology) {
+        localStorage.setItem('fp_ideology', data.user.ideology);
+        applyIdeology(data.user.ideology);
+      } else {
+        retakeQuiz();
+      }
     } else {
       errEl.textContent = data.msg || 'Something went wrong.';
       errEl.style.display='block';
@@ -794,8 +799,10 @@ async function submitAuth() {
     } else {
       currentUser = {id:1, username: email.split('@')[0], ideology: localStorage.getItem('fp_ideology')||''};
     }
-    closeAuth();
+    mustAuthBeforeQuiz = false;
+    closeAuth(true);
     renderAuthArea();
+    if (!currentUser.ideology) retakeQuiz();
   }
 }
 
@@ -1160,6 +1167,10 @@ async function submitArticle() {
    BOOT
 ═══════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', async () => {
+  renderQuizStep();
+  document.getElementById('quiz-count').textContent = `1 / ${QUIZ_TOTAL}`;
+  document.getElementById('quiz-fill').style.width = `${(1/QUIZ_TOTAL)*100}%`;
+
   // Date
   document.getElementById('today-date').textContent =
     new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
@@ -1180,10 +1191,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Ideology from localStorage
   const stored = localStorage.getItem('fp_ideology');
-  if (stored) {
+  if (currentUser?.ideology || stored) {
+    const ideology = currentUser?.ideology || stored;
+    localStorage.setItem('fp_ideology', ideology);
     document.getElementById('quiz-overlay').style.display = 'none';
-    applyIdeology(stored);
+    applyIdeology(ideology);
   } else {
+    mustAuthBeforeQuiz = true;
+    openAuth('login');
     renderHome(); // render without ideology
   }
 
