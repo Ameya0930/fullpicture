@@ -141,6 +141,9 @@ input:checked + .slider::before{transform:translateX(18px)}
 .filter-btn{background:transparent;border:none;border-bottom:3px solid transparent;padding:13px 16px;font-size:.78rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);cursor:pointer;white-space:nowrap;transition:all .15s}
 .filter-btn:hover{color:var(--ink)}
 .filter-btn.active{color:var(--ink);border-bottom-color:var(--accent)}
+.sort-wrap{display:flex;align-items:center;gap:8px;margin-left:auto;padding:0 10px}
+.sort-wrap label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.sort-select{border:1px solid var(--rule);background:var(--paper);padding:6px 10px;border-radius:3px;font-size:.8rem;color:var(--ink)}
 
 /* ══════════════════════════════ HOMEPAGE LAYOUT */
 .homepage{max-width:1320px;margin:0 auto;padding:0 2rem 4rem}
@@ -149,6 +152,10 @@ input:checked + .slider::before{transform:translateX(18px)}
 .date-line{display:flex;align-items:center;justify-content:space-between;padding:1rem 0 .75rem;border-bottom:1.5px solid var(--ink);margin-bottom:1.5rem}
 .date-line .date{font-size:.78rem;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
 .date-line .tagline{font-size:.78rem;font-style:italic;color:var(--ink-3)}
+.recent-strip{margin:-.5rem 0 1.2rem}
+.recent-strip h4{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.45rem}
+.recent-list{display:flex;flex-wrap:wrap;gap:8px}
+.recent-item{background:#fffdf8;border:1px solid var(--rule);border-radius:999px;padding:6px 10px;font-size:.76rem;cursor:pointer}
 
 /* HERO GRID */
 .hero-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:1rem;margin-bottom:1.75rem;align-items:start}
@@ -196,6 +203,7 @@ input:checked + .slider::before{transform:translateX(18px)}
 .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--rule);margin-top:auto}
 .card-source{font-size:.72rem;font-weight:500;color:var(--ink-3)}
 .read-btn{font-size:.72rem;font-weight:500;color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
+.save-btn{font-size:.72rem;font-weight:700;color:var(--ink-2);letter-spacing:.04em;text-transform:uppercase;border:none;background:none;cursor:pointer}
 .coverage-note{font-size:.72rem;color:var(--ink-3)}
 .trending-badge{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:#fff3cd;color:#7a5400;padding:2px 6px;border-radius:999px}
 .empty-state{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--ink-3)}
@@ -225,6 +233,9 @@ input:checked + .slider::before{transform:translateX(18px)}
 .view-box p{font-size:.84rem;color:var(--ink-2);line-height:1.5}
 .read-orig-btn{display:inline-block;background:var(--ink);color:white;padding:13px 28px;font-size:.9rem;font-weight:500;letter-spacing:.04em;border-radius:3px;margin-bottom:2.5rem;transition:background .15s;border:none;cursor:pointer}
 .read-orig-btn:hover{background:#333}
+.article-actions{display:flex;gap:10px;flex-wrap:wrap;margin:-1.5rem 0 2rem}
+.article-action-btn{border:1px solid var(--rule);background:#fffdf8;padding:8px 12px;border-radius:3px;font-size:.8rem;cursor:pointer}
+.read-progress{position:fixed;top:0;left:0;height:4px;background:var(--accent);width:0;z-index:999}
 .comments-h{font-family:var(--font-display);font-size:1.25rem;font-weight:700;margin-bottom:1.25rem;padding-bottom:.65rem;border-bottom:1.5px solid var(--ink)}
 .comment-form{display:flex;flex-direction:column;gap:9px;margin-bottom:1.75rem}
 .comment-form input,.comment-form textarea{border:1.5px solid var(--rule);border-radius:3px;padding:9px 13px;font-size:.88rem;background:var(--paper);color:var(--ink);transition:border-color .15s;width:100%}
@@ -267,6 +278,10 @@ input:checked + .slider::before{transform:translateX(18px)}
 footer{background:var(--paper-2);border-top:1.5px solid var(--rule);padding:2rem;text-align:center}
 .footer-brand{font-family:var(--font-display);font-size:1.15rem;font-weight:900;display:block;margin-bottom:.35rem}
 footer p{font-size:.82rem;color:var(--ink-3)}
+.to-top{position:fixed;right:18px;bottom:18px;border:none;background:var(--ink);color:white;padding:10px 12px;border-radius:999px;font-size:.78rem;display:none;z-index:300}
+.to-top.visible{display:block}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:white;padding:10px 14px;border-radius:4px;font-size:.82rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:1000}
+.toast.show{opacity:1}
 
 /* ══════════════════════════════ RESPONSIVE */
 @media(max-width:1024px){
@@ -291,6 +306,7 @@ footer p{font-size:.82rem;color:var(--ink-3)}
 </style>
 </head>
 <body>
+<div id="read-progress" class="read-progress"></div>
 
 <!-- ═══════════════ QUIZ -->
 <div id="quiz-overlay" class="quiz-overlay">
@@ -378,12 +394,21 @@ footer p{font-size:.82rem;color:var(--ink-3)}
   <div class="filter-bar">
     <div class="filter-inner">
       <button class="filter-btn active" data-filter="all">All Topics</button>
+      <button class="filter-btn" data-filter="saved">Saved</button>
       <button class="filter-btn" data-filter="politics">Politics</button>
       <button class="filter-btn" data-filter="economy">Economy</button>
       <button class="filter-btn" data-filter="climate">Climate</button>
       <button class="filter-btn" data-filter="immigration">Immigration</button>
       <button class="filter-btn" data-filter="healthcare">Healthcare</button>
       <button class="filter-btn" data-filter="world">World</button>
+      <div class="sort-wrap">
+        <label for="sort-select">Sort</label>
+        <select id="sort-select" class="sort-select">
+          <option value="newest">Newest</option>
+          <option value="views">Most Viewed</option>
+          <option value="trending">Trending First</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -401,6 +426,10 @@ footer p{font-size:.82rem;color:var(--ink-3)}
     <div class="date-line">
       <span class="date" id="today-date"></span>
       <span class="tagline">"The truth is rarely left or right — it lives somewhere in between."</span>
+    </div>
+    <div class="recent-strip" id="recent-strip" style="display:none">
+      <h4>Recently Viewed</h4>
+      <div class="recent-list" id="recent-list"></div>
     </div>
 
     <!-- HERO GRID -->
@@ -470,6 +499,8 @@ footer p{font-size:.82rem;color:var(--ink-3)}
     <p style="margin-top:6px;font-size:11px;opacity:.4">© 2026 TheFullPicture.com · Open source on GitHub</p>
   </div>
 </footer>
+<button class="to-top" id="to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+<div class="toast" id="toast"></div>
 
 <script>
 /* ═══════════════════════════════════════════════════
@@ -559,7 +590,40 @@ let showOtherSide = false;
 let currentUser = null;   // {id, username, ideology}
 let authMode = 'login';   // 'login' | 'register'
 let mustAuthBeforeQuiz = false;
+let activeSort = 'newest';
 const API = `${window.location.origin}/api`;
+
+function getSavedIds() {
+  try { return JSON.parse(localStorage.getItem('fp_saved') || '[]'); } catch(e) { return []; }
+}
+function setSavedIds(ids) { localStorage.setItem('fp_saved', JSON.stringify(ids)); }
+function toggleSaved(id) {
+  const ids = getSavedIds();
+  const exists = ids.includes(id);
+  const next = exists ? ids.filter(x => x !== id) : [...ids, id];
+  setSavedIds(next);
+  showToast(exists ? 'Removed from saved' : 'Saved article');
+  renderHome();
+  if (currentPage === 'article') renderArticlePage(id);
+}
+function isSaved(id) { return getSavedIds().includes(id); }
+function addRecent(id) {
+  const cur = JSON.parse(localStorage.getItem('fp_recent') || '[]');
+  const next = [id, ...cur.filter(x => x !== id)].slice(0, 6);
+  localStorage.setItem('fp_recent', JSON.stringify(next));
+}
+function getRecentArticles() {
+  const ids = JSON.parse(localStorage.getItem('fp_recent') || '[]');
+  return ids.map(id => ARTICLES.find(a => a.id === id)).filter(Boolean);
+}
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast.t);
+  showToast.t = setTimeout(() => el.classList.remove('show'), 1400);
+}
 
 /* ═══════════════════════════════════════════════════
    ROUTING
@@ -573,6 +637,7 @@ function showPage(page, articleId) {
   if (nb) nb.classList.add('active');
   if (page === 'article' && articleId) renderArticlePage(articleId);
   window.scrollTo(0,0);
+  updateReadProgress();
 }
 
 function goHome() {
@@ -724,6 +789,27 @@ function pickSearch(id) {
   showPage('article', id);
 }
 function closeSearchDelay() { setTimeout(()=>document.getElementById('search-drop').classList.remove('open'), 200); }
+function copyArticleLink(id) {
+  const url = `${window.location.origin}${window.location.pathname}#article-${id}`;
+  navigator.clipboard?.writeText(url);
+  showToast('Article link copied');
+}
+function shareToX(id) {
+  const a = ARTICLES.find(x => x.id === id);
+  if (!a) return;
+  const u = encodeURIComponent(a.url);
+  const t = encodeURIComponent(`${a.title} via The FullPicture`);
+  window.open(`https://twitter.com/intent/tweet?text=${t}&url=${u}`, '_blank', 'noopener');
+}
+function updateReadProgress() {
+  const el = document.getElementById('read-progress');
+  if (!el) return;
+  if (currentPage !== 'article') { el.style.width = '0%'; return; }
+  const doc = document.documentElement;
+  const total = doc.scrollHeight - window.innerHeight;
+  const pct = total <= 0 ? 0 : Math.min(100, Math.max(0, (window.scrollY / total) * 100));
+  el.style.width = `${pct}%`;
+}
 
 /* ═══════════════════════════════════════════════════
    AUTH
@@ -881,13 +967,20 @@ function renderSummaryStrip(filtered, leanings) {
 
 function renderHome() {
   const leanings = getVisibleLeanings();
+  const savedIds = getSavedIds();
   let filtered = ARTICLES.filter(a => {
-    const topicOk = activeFilter==='all' || a.topic===activeFilter;
+    const topicOk = activeFilter==='all' || a.topic===activeFilter || (activeFilter==='saved' && savedIds.includes(a.id));
     const leanOk = leanings.includes(a.lean);
     return topicOk && leanOk;
   });
+  filtered = filtered.sort((a,b) => {
+    if (activeSort === 'views') return b.views - a.views;
+    if (activeSort === 'trending') return Number(b.trending) - Number(a.trending) || b.id - a.id;
+    return b.id - a.id;
+  });
 
   renderSummaryStrip(filtered, leanings);
+  renderRecentStrip();
 
   // HERO: featured (trending, most views)
   const hero = filtered.find(a=>a.trending) || filtered[0];
@@ -915,6 +1008,7 @@ function renderHome() {
       </div>
       <h2 class="feat-title">${hero.title}</h2>
       <p class="feat-deck">${hero.summary}</p>
+      <p class="feat-byline">${Math.max(1, Math.ceil(hero.summary.split(' ').length / 180))} min read</p>
       <p class="feat-byline">${hero.author} · ${hero.source} · ${hero.date} · ${hero.views.toLocaleString()} views</p>
     </div>
     <div class="sidebar-stack">
@@ -947,6 +1041,7 @@ function renderHome() {
       <div class="card-footer">
         <span class="card-source">${a.source}</span>
         <div style="display:flex;gap:10px;align-items:center">
+          <button class="save-btn" onclick="event.stopPropagation();toggleSaved(${a.id})">${isSaved(a.id)?'Saved':'Save'}</button>
           <span class="coverage-note">${(a.comments.length + loadComments(a.id).length)} comments</span>
           <span class="read-btn">Read →</span>
         </div>
@@ -954,8 +1049,22 @@ function renderHome() {
     </div>`).join('');
 }
 
+function renderRecentStrip() {
+  const strip = document.getElementById('recent-strip');
+  const list = document.getElementById('recent-list');
+  if (!strip || !list) return;
+  const items = getRecentArticles();
+  if (!items.length) {
+    strip.style.display = 'none';
+    return;
+  }
+  strip.style.display = 'block';
+  list.innerHTML = items.map(a => `<button class="recent-item" onclick="openArticle(${a.id})">${a.title.slice(0,60)}${a.title.length>60?'…':''}</button>`).join('');
+}
+
 function openArticle(id) {
   logView(id);
+  addRecent(id);
   showPage('article', id);
 }
 
@@ -980,7 +1089,12 @@ function renderArticlePage(id) {
       <span style="font-size:.75rem;color:var(--ink-3);margin-left:auto">${article.views.toLocaleString()} views</span>
     </div>
     <h1 class="art-title">${article.title}</h1>
-    <p class="art-byline">By <strong>${article.author}</strong> · ${article.source}</p>
+    <p class="art-byline">By <strong>${article.author}</strong> · ${article.source} · ${Math.max(1, Math.ceil(article.summary.split(' ').length / 180))} min read</p>
+    <div class="article-actions">
+      <button class="article-action-btn" onclick="toggleSaved(${article.id})">${isSaved(article.id) ? '★ Saved' : '☆ Save'}</button>
+      <button class="article-action-btn" onclick="copyArticleLink(${article.id})">Copy Link</button>
+      <button class="article-action-btn" onclick="shareToX(${article.id})">Share on X</button>
+    </div>
 
     <div class="ai-box">
       <div class="ai-box-label">🤖 AI Summary — Both Sides</div>
@@ -1217,6 +1331,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderHome();
   });
 
+  document.getElementById('sort-select').addEventListener('change', e => {
+    activeSort = e.target.value;
+    renderHome();
+  });
+
+  window.addEventListener('scroll', () => {
+    updateReadProgress();
+    const toTop = document.getElementById('to-top');
+    if (window.scrollY > 260) toTop.classList.add('visible');
+    else toTop.classList.remove('visible');
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      const t = e.target;
+      if (t && ['INPUT','TEXTAREA','SELECT'].includes(t.tagName)) return;
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
+
   // Close user dropdown on outside click
   document.addEventListener('click', e => {
     if (!e.target.closest('#user-menu')) {
@@ -1226,6 +1361,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('search-drop').classList.remove('open');
     }
   });
+  updateReadProgress();
 });
 </script>
 </body>
