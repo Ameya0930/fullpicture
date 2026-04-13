@@ -123,14 +123,16 @@ input:checked + .slider::before{transform:translateX(18px)}
 .ideology-strip{background:var(--paper-2);border-top:1px solid var(--rule);padding:5px 2rem;font-size:.78rem;color:var(--ink-2);text-align:center;display:none}
 .ideology-strip.visible{display:block}
 
-/* ══════════════════════════════ TICKER */
-.ticker-bar{background:var(--ink);color:white;padding:7px 0;overflow:hidden;white-space:nowrap}
-.ticker-inner{display:inline-flex;gap:3rem;animation:ticker 40s linear infinite}
-.ticker-inner:hover{animation-play-state:paused}
-@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.tick-item{font-size:.78rem;letter-spacing:.03em;cursor:pointer;opacity:.85;transition:opacity .15s;flex-shrink:0}
-.tick-item:hover{opacity:1}
-.tick-sep{opacity:.3;margin:0 .5rem}
+/* ══════════════════════════════ HOME INTRO */
+.home-intro{display:grid;grid-template-columns:1.35fr .95fr;gap:1rem;align-items:start;padding:1.5rem 0 1.25rem;border-bottom:1px solid var(--rule);margin-bottom:1.5rem}
+.home-copy h1{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.3rem);line-height:1.02;margin-bottom:.75rem;max-width:12ch}
+.home-copy p{max-width:58ch;color:var(--ink-2);font-size:.95rem}
+.home-kicker{font-size:.75rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem}
+.summary-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}
+.summary-pill{background:#fffdf8;border:1px solid var(--rule);border-radius:16px;padding:1rem 1.1rem}
+.summary-pill strong{display:block;font-family:var(--font-display);font-size:1.35rem;line-height:1;margin-bottom:.4rem;color:var(--ink)}
+.summary-pill span{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.summary-pill p{font-size:.83rem;color:var(--ink-2);line-height:1.45;margin-top:.3rem}
 
 /* ══════════════════════════════ FILTER BAR */
 .filter-bar{border-bottom:1px solid var(--rule);background:var(--paper);position:sticky;top:65px;z-index:190}
@@ -148,52 +150,54 @@ input:checked + .slider::before{transform:translateX(18px)}
 .date-line .date{font-size:.78rem;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
 .date-line .tagline{font-size:.78rem;font-style:italic;color:var(--ink-3)}
 
-/* HERO GRID — newspaper front page */
-.hero-grid{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:auto;gap:0;border-bottom:1.5px solid var(--ink);margin-bottom:1.5rem}
+/* HERO GRID */
+.hero-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:1rem;margin-bottom:1.75rem;align-items:start}
 
 /* FEATURED (big left) */
-.featured-card{padding:1.5rem 1.5rem 1.5rem 0;border-right:1.5px solid var(--ink);cursor:pointer}
+.featured-card{padding:1.85rem;background:#fffdf8;border:1px solid var(--rule);border-radius:22px;cursor:pointer;min-height:100%}
 .featured-card:hover .feat-title{text-decoration:underline;text-decoration-color:var(--accent)}
-.feat-label{display:inline-flex;align-items:center;gap:6px;margin-bottom:.75rem}
+.feat-label{display:inline-flex;align-items:center;gap:6px;margin-bottom:.95rem;flex-wrap:wrap}
 .feat-eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .feat-title{font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:900;line-height:1.1;margin-bottom:.75rem;color:var(--ink)}
 .feat-deck{font-size:1rem;color:var(--ink-2);line-height:1.6;margin-bottom:1rem}
-.feat-byline{font-size:.8rem;color:var(--ink-3)}
+.feat-byline{font-size:.82rem;color:var(--ink-3)}
 .feat-badge{background:var(--accent);color:white;font-size:.68rem;font-weight:600;letter-spacing:.1em;padding:3px 8px;border-radius:2px;text-transform:uppercase}
 
 /* SIDEBAR STACK (right column) */
-.sidebar-stack{display:flex;flex-direction:column;padding-left:1.5rem}
-.side-card{padding:1rem 0;border-bottom:1px solid var(--rule);cursor:pointer;transition:background .12s}
-.side-card:last-child{border-bottom:none}
+.sidebar-stack{display:flex;flex-direction:column;gap:.9rem}
+.side-card{padding:1rem 1.05rem;background:#fffdf8;border:1px solid var(--rule);border-radius:18px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s}
+.side-card:last-child{border-bottom:1px solid var(--rule)}
+.side-card:hover{transform:translateY(-1px);border-color:#cbbd96}
 .side-card:hover .side-title{text-decoration:underline;text-decoration-color:var(--accent)}
-.side-number{font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--rule);line-height:1;margin-bottom:.3rem}
-.side-meta{display:flex;gap:6px;align-items:center;margin-bottom:.35rem}
-.side-title{font-family:var(--font-display);font-size:.95rem;font-weight:700;line-height:1.3;color:var(--ink)}
+.side-number{display:none}
+.side-meta{display:flex;gap:6px;align-items:center;margin-bottom:.45rem;flex-wrap:wrap}
+.side-title{font-family:var(--font-display);font-size:1rem;font-weight:700;line-height:1.3;color:var(--ink);margin-bottom:.45rem}
 .side-source{font-size:.72rem;color:var(--ink-3);margin-top:.2rem}
+.side-summary{font-size:.84rem;color:var(--ink-2);line-height:1.5}
 
 /* SECTION LABEL */
-.section-label{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:.6rem 0;border-bottom:1px solid var(--rule);margin-bottom:1rem}
+.section-label{font-size:.72rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);padding:.6rem 0;border-bottom:1px solid var(--rule);margin:0 0 1rem}
 .section-label span{color:var(--accent)}
 
 /* CARD GRID — lower section */
-.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--rule)}
-.article-card{padding:1.25rem;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);cursor:pointer;transition:background .15s;display:flex;flex-direction:column;gap:8px}
-.article-card:nth-child(3n){border-right:none}
-.article-card:hover{background:var(--paper-2)}
-.card-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.article-card{padding:1.2rem 1.25rem;border:1px solid var(--rule);border-radius:18px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s;display:flex;flex-direction:column;gap:10px;background:#fffdf8}
+.article-card:nth-child(3n){border-right:1px solid var(--rule)}
+.article-card:hover{background:#fffaf0;transform:translateY(-1px);border-color:#cbbd96}
+.card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .lean-tag{font-size:8px;font-weight:600;letter-spacing:.12em;padding:3px 7px;border-radius:2px;text-transform:uppercase;flex-shrink:0}
 .lean-tag.left{color:var(--left);background:var(--left-light)}
 .lean-tag.right{color:var(--right);background:var(--right-light)}
 .lean-tag.center{color:var(--center);background:var(--center-light)}
 .topic-tag{font-size:8px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .card-date{font-size:.72rem;color:var(--ink-3);margin-left:auto}
-.card-title{font-family:var(--font-display);font-size:1rem;font-weight:700;line-height:1.3;color:var(--ink)}
-.card-summary{font-size:.84rem;color:var(--ink-2);line-height:1.5;flex:1}
-.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--rule);margin-top:auto}
+.card-title{font-family:var(--font-display);font-size:1.08rem;font-weight:700;line-height:1.3;color:var(--ink)}
+.card-summary{font-size:.86rem;color:var(--ink-2);line-height:1.55;flex:1}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--rule);margin-top:auto}
 .card-source{font-size:.72rem;font-weight:500;color:var(--ink-3)}
 .read-btn{font-size:.72rem;font-weight:500;color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
-.comment-count{font-size:.72rem;color:var(--ink-3)}
-.trending-badge{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:#fff3cd;color:#7a5400;padding:2px 6px;border-radius:2px}
+.coverage-note{font-size:.72rem;color:var(--ink-3)}
+.trending-badge{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:#fff3cd;color:#7a5400;padding:2px 6px;border-radius:999px}
 .empty-state{grid-column:1/-1;text-align:center;padding:4rem 2rem;color:var(--ink-3)}
 .empty-state h3{font-family:var(--font-display);font-size:1.4rem;margin-bottom:.5rem}
 
@@ -266,26 +270,23 @@ footer p{font-size:.82rem;color:var(--ink-3)}
 
 /* ══════════════════════════════ RESPONSIVE */
 @media(max-width:1024px){
+  .home-intro{grid-template-columns:1fr}
   .hero-grid{grid-template-columns:1fr}
-  .featured-card{border-right:none;border-bottom:1.5px solid var(--ink);padding:0 0 1.5rem}
-  .sidebar-stack{padding-left:0;padding-top:1rem;display:grid;grid-template-columns:1fr 1fr;gap:0}
-  .side-card{padding:.75rem .75rem .75rem 0}
+  .featured-card{padding:1.5rem}
+  .sidebar-stack{display:grid;grid-template-columns:1fr 1fr}
 }
 @media(max-width:768px){
-  .card-grid{grid-template-columns:1fr 1fr}
-  .article-card:nth-child(3n){border-right:1px solid var(--rule)}
-  .article-card:nth-child(2n){border-right:none}
+  .summary-strip,.card-grid{grid-template-columns:1fr}
   .search-results-drop{width:280px}
   .views-split{grid-template-columns:1fr}
 }
 @media(max-width:560px){
-  .card-grid{grid-template-columns:1fr}
-  .article-card{border-right:none}
   .header-top{gap:1rem;height:auto;min-height:56px;padding:.5rem 1rem;flex-wrap:wrap}
   nav{display:none}
   .brand-pill{display:none}
   .search-wrap{max-width:100%;order:3;width:100%}
   .sidebar-stack{grid-template-columns:1fr}
+  .home-copy h1{max-width:none}
 }
 </style>
 </head>
@@ -416,9 +417,6 @@ footer p{font-size:.82rem;color:var(--ink-3)}
 
 <!-- HOME -->
 <div class="page active" id="page-home">
-  <!-- TICKER -->
-  <div class="ticker-bar" id="ticker-bar"></div>
-
   <!-- FILTER -->
   <div class="filter-bar">
     <div class="filter-inner">
@@ -433,6 +431,15 @@ footer p{font-size:.82rem;color:var(--ink-3)}
   </div>
 
   <div class="homepage">
+    <div class="home-intro">
+      <div class="home-copy">
+        <div class="home-kicker">Balanced Briefing</div>
+        <h1>A calmer way to compare the news.</h1>
+        <p>Browse more coverage without the crowded newsroom feel. The feed now surfaces a clearer lead story, a tighter short list, and a broader mix of articles underneath.</p>
+      </div>
+      <div class="summary-strip" id="summary-strip"></div>
+    </div>
+
     <!-- DATE / TAGLINE -->
     <div class="date-line">
       <span class="date" id="today-date"></span>
@@ -443,7 +450,7 @@ footer p{font-size:.82rem;color:var(--ink-3)}
     <div class="hero-grid" id="hero-grid"></div>
 
     <!-- MORE STORIES -->
-    <div class="section-label">More Stories · <span>Trending Today</span></div>
+    <div class="section-label" id="stories-label">More Stories · <span>Across The Feed</span></div>
     <div class="card-grid" id="card-grid"></div>
   </div>
 
@@ -543,6 +550,46 @@ const ARTICLES = [
   {id:8,title:"NATO Allies Agree to Raise Defence Spending After Summit",summary:"All 32 member states committed to spending at least 3% of GDP on defence by 2030, marking the highest collective target in history.",aiSummary:"NATO members agreed to a new 3% of GDP defence spending target by 2030.",lean:"right",topic:"world",source:"The Economist",url:"https://economist.com",author:"Hans Mueller",date:"April 4, 2026",trending:false,views:1944,
     leftView:"Critics question whether military escalation is the right response and argue the funds could address urgent social needs.",
     rightView:"Conservatives view this as a necessary deterrent to Russian aggression and long-overdue burden-sharing.",
+    comments:[]},
+  {id:9,title:"Most US adults say child care costs are a 'major problem,' a new AP-NORC poll finds",summary:"A wide majority of Americans describe child care costs as a major strain, while support for solutions splits along lines about how much government and employers should be required to do.",aiSummary:"An AP-NORC poll found strong agreement that child care costs are a serious burden, but less agreement on how much public intervention should follow.",lean:"center",topic:"economy",source:"AP News",url:"https://apnews.com/article/3683d97e5861f3411bcdf810cea3c35f",author:"Linley Sanders",date:"July 10, 2025",trending:true,views:4386,
+    leftView:"Progressives see the poll as evidence for subsidies, paid leave and a larger public role in early-childhood support.",
+    rightView:"Conservatives tend to prefer tax relief and employer flexibility over building a broad new federal child care programme.",
+    comments:[]},
+  {id:10,title:"House Republicans propose $5 billion for private school vouchers",summary:"Republicans proposed a major new federal voucher programme to help families pay private school tuition, escalating the national debate over public funding for alternative education.",aiSummary:"A House Republican plan would devote billions to scholarships for private education, turning school choice into a larger federal fight.",lean:"right",topic:"politics",source:"AP News",url:"https://apnews.com/article/ead4f919a913cb8a92d1f95e5b864b38",author:"Collin Binkley",date:"June 11, 2025",trending:false,views:3212,
+    leftView:"Opponents argue vouchers siphon money from public schools and deepen inequality in who gets access to quality education.",
+    rightView:"Supporters say the plan expands parental control and pressures underperforming school systems to improve.",
+    comments:[]},
+  {id:11,title:"Annual Family Premiums for Employer Coverage Rise 7% to Average $25,572 in 2024, Benchmark Survey Finds",summary:"KFF found employer-sponsored family coverage climbed sharply again, reinforcing concerns that even insured households are carrying heavier healthcare costs each year.",aiSummary:"KFF's 2024 employer health survey found another meaningful increase in annual family premiums, keeping affordability near the center of the healthcare debate.",lean:"center",topic:"healthcare",source:"KFF",url:"https://www.kff.org/health-costs/press-release/annual-family-premiums-for-employer-coverage-rise-7-to-average-25572-in-2024-benchmark-survey-finds-after-also-rising-7-last-year/",author:"KFF Staff",date:"October 9, 2024",trending:true,views:4674,
+    leftView:"The left sees rising premiums as proof the current employer-based system still leaves families underinsured and financially squeezed.",
+    rightView:"The right argues high premiums reflect deeper price distortions and overregulation, not simply too little public spending.",
+    comments:[]},
+  {id:12,title:"Germany to raise defense spending to 3.5% of GDP in 2029",summary:"Germany signaled a major shift in European security planning, committing to higher defense spending ahead of broader alliance pressure for stronger military readiness.",aiSummary:"Germany's plan to boost defense spending underscores the broader NATO move toward heavier military investment in response to security threats.",lean:"right",topic:"world",source:"AP News",url:"https://apnews.com/article/169e869922af3d349329ac1a921e634d",author:"Geir Moulson",date:"June 24, 2025",trending:false,views:2878,
+    leftView:"Critics worry the scale of military buildup risks crowding out social investment and normalizing permanent escalation.",
+    rightView:"Supporters argue the move reflects overdue realism about deterrence and Europe's long-term security obligations.",
+    comments:[]},
+  {id:13,title:"Biden’s new executive order denies asylum claims to most migrants crossing the border unlawfully",summary:"NPR reported that the administration sharply narrowed asylum access for migrants crossing between ports of entry, changing both the politics and legal terrain of border policy.",aiSummary:"The order tightened asylum eligibility for most migrants crossing unlawfully, reflecting the administration's attempt to reduce arrivals while preserving some legal pathways.",lean:"left",topic:"immigration",source:"NPR",url:"https://www.npr.org/2024/06/04/nx-s1-4991917/biden-executive-order-asylum-migration-border",author:"Ximena Bustillo",date:"June 4, 2024",trending:false,views:3524,
+    leftView:"Immigrant-rights advocates argue the order narrows humanitarian protections and normalizes a harsher baseline on asylum.",
+    rightView:"Restriction-first voters see the move as evidence that tougher enforcement is both legally possible and politically necessary.",
+    comments:[]},
+  {id:14,title:"Business group estimates several hundred thousand clean energy jobs in EV, battery storage and solar",summary:"A new clean-energy analysis highlighted how investment in EVs, batteries and solar is translating into large manufacturing and construction job pipelines across multiple states.",aiSummary:"Clean energy advocates say policy-backed investment is expanding job creation in vehicles, batteries and solar, especially in industrial regions.",lean:"center",topic:"climate",source:"AP News",url:"https://apnews.com/article/7003abd46f1e540d483a9adfcc45262a",author:"Matthew Daly",date:"September 6, 2023",trending:false,views:2769,
+    leftView:"Supporters frame the jobs data as proof that industrial climate policy can cut emissions while rebuilding domestic manufacturing.",
+    rightView:"Skeptics question how durable those gains are once subsidies fade and whether taxpayers are underwriting too much private risk.",
+    comments:[]},
+  {id:15,title:"Georgia Senate unanimously backs pricey push for $250 child tax credit",summary:"Georgia lawmakers moved toward a new state tax credit for families with children, highlighting a version of family policy built around tax relief instead of direct service expansion.",aiSummary:"Georgia's child tax credit proposal illustrates how family affordability debates are increasingly being fought through targeted tax policy.",lean:"right",topic:"economy",source:"AP News",url:"https://apnews.com/article/ffbdf2e7dcb02adb7c9f218ed1a20cb8",author:"Jeff Amy",date:"February 19, 2025",trending:false,views:2415,
+    leftView:"Some on the left argue tax credits help, but are less reliable than universal child care, housing and healthcare support.",
+    rightView:"Conservatives often prefer tax credits because they support families without building permanent new entitlement programmes.",
+    comments:[]},
+  {id:16,title:"Federal Reserve says interest rates will stay at two-decade high until inflation further cools",summary:"The Fed signaled patience in its inflation fight, keeping borrowing costs high while waiting for more convincing evidence that price growth was easing sustainably.",aiSummary:"Federal Reserve officials emphasized they would keep rates elevated until inflation showed broader and more durable improvement.",lean:"center",topic:"economy",source:"AP News",url:"https://apnews.com/article/348e4db8a6c91f108268713d181d6a17",author:"Christopher Rugaber",date:"May 1, 2024",trending:true,views:4988,
+    leftView:"Labour-focused critics argue the Fed risks leaning too hard on workers and slowing growth more than necessary.",
+    rightView:"Inflation hawks say credibility depends on staying restrictive until price pressures are clearly under control.",
+    comments:[]},
+  {id:17,title:"Clean Energy Jobs Grew at Twice the Rate of US Jobs Overall in 2023",summary:"Bloomberg highlighted national clean-energy job growth that outpaced the wider economy, adding to the case that climate investment is becoming a significant labor-market story.",aiSummary:"The clean-energy sector expanded faster than the broader US job market in 2023, reinforcing claims that the energy transition is reshaping employment patterns.",lean:"center",topic:"climate",source:"Bloomberg",url:"https://www.bloomberg.com/news/articles/2024-08-28/clean-energy-jobs-grew-at-twice-the-rate-of-us-jobs-overall-in-2023",author:"Jennifer A Dlouhy",date:"August 28, 2024",trending:false,views:2661,
+    leftView:"Climate advocates see job growth as evidence that decarbonization can be sold as economic development, not just environmental sacrifice.",
+    rightView:"Market-oriented critics want stronger evidence that these jobs remain viable without long-term subsidy dependence.",
+    comments:[]},
+  {id:18,title:"Biden's plan will shield undocumented spouses of U.S. citizens from deportation",summary:"NPR examined a policy designed to protect certain undocumented spouses of U.S. citizens, creating a new flashpoint over executive power and family-based immigration relief.",aiSummary:"The policy would offer deportation protection and a path to legal stability for some undocumented spouses of US citizens.",lean:"left",topic:"immigration",source:"NPR",url:"https://www.npr.org/2024/06/18/g-s1-4918/parole-immigration-biden-undocumented-deportation",author:"Ximena Bustillo",date:"June 18, 2024",trending:false,views:2984,
+    leftView:"Supporters argue the measure keeps mixed-status families together and corrects a system that punishes long-established households.",
+    rightView:"Opponents argue it stretches executive authority and encourages future illegal immigration by rewarding unlawful presence.",
     comments:[]}
 ];
 
@@ -788,19 +835,6 @@ async function saveIdeologyToServer(ideology, scores) {
 }
 
 /* ═══════════════════════════════════════════════════
-   TICKER
-═══════════════════════════════════════════════════ */
-function buildTicker() {
-  const trending = ARTICLES.filter(a=>a.trending);
-  const items = [...trending, ...trending].map((a,i) =>
-    `<span class="tick-item" onclick="showPage('article',${a.id})">
-      <span class="lean-tag ${a.lean}" style="font-size:7px;padding:2px 5px;border-radius:2px;margin-right:4px">${a.lean.toUpperCase()}</span>${a.title}
-    </span><span class="tick-sep">·</span>`
-  ).join('');
-  document.getElementById('ticker-bar').innerHTML = `<div class="ticker-inner">${items}</div>`;
-}
-
-/* ═══════════════════════════════════════════════════
    HOME FEED
 ═══════════════════════════════════════════════════ */
 function getVisibleLeanings() {
@@ -812,6 +846,25 @@ function getVisibleLeanings() {
   return ideology==='left'?['left','center']: ideology==='right'?['right','center']:['left','center','right'];
 }
 
+function renderSummaryStrip(filtered, leanings) {
+  const summary = document.getElementById('summary-strip');
+  if (!summary) return;
+  const topics = new Set(filtered.map(a => a.topic));
+  const sources = new Set(filtered.map(a => a.source));
+  const perspectiveLabel = showOtherSide ? 'opposing views' : 'current blend';
+  summary.innerHTML = `
+    <div class="summary-pill">
+      <span>Stories In View</span>
+      <strong>${filtered.length}</strong>
+      <p>${topics.size} topics currently represented across your visible feed.</p>
+    </div>
+    <div class="summary-pill">
+      <span>Perspective Mix</span>
+      <strong>${leanings.length}</strong>
+      <p>Showing ${perspectiveLabel} from ${sources.size} sources.</p>
+    </div>`;
+}
+
 function renderHome() {
   const leanings = getVisibleLeanings();
   let filtered = ARTICLES.filter(a => {
@@ -820,21 +873,29 @@ function renderHome() {
     return topicOk && leanOk;
   });
 
+  renderSummaryStrip(filtered, leanings);
+
   // HERO: featured (trending, most views)
   const hero = filtered.find(a=>a.trending) || filtered[0];
   const heroGrid = document.getElementById('hero-grid');
   const cardGrid = document.getElementById('card-grid');
+  const storiesLabel = document.getElementById('stories-label');
 
   if (!hero) {
     heroGrid.innerHTML = '';
+    if (storiesLabel) storiesLabel.innerHTML = `More Stories · <span>0 In View</span>`;
     cardGrid.innerHTML = `<div class="empty-state"><h3>No articles found</h3><p>Try toggling the perspective or changing the filter.</p></div>`;
     return;
+  }
+
+  if (storiesLabel) {
+    storiesLabel.innerHTML = `More Stories · <span>${filtered.length - 1} Additional Briefings</span>`;
   }
 
   heroGrid.innerHTML = `
     <div class="featured-card" onclick="openArticle(${hero.id})">
       <div class="feat-label">
-        <span class="feat-badge">🔥 Top Story</span>
+        <span class="feat-badge">Lead Story</span>
         <span class="lean-tag ${hero.lean}" style="margin-left:6px">${hero.lean==='left'?'◀ Left':hero.lean==='right'?'Right ▶':'● Center'}</span>
         <span class="topic-tag" style="margin-left:4px">${hero.topic}</span>
       </div>
@@ -851,6 +912,7 @@ function renderHome() {
             <span class="topic-tag">${a.topic}</span>
           </div>
           <div class="side-title">${a.title}</div>
+          <div class="side-summary">${a.summary}</div>
           <div class="side-source">${a.source} · ${a.views.toLocaleString()} views</div>
         </div>`).join('')}
     </div>`;
@@ -871,7 +933,7 @@ function renderHome() {
       <div class="card-footer">
         <span class="card-source">${a.source}</span>
         <div style="display:flex;gap:10px;align-items:center">
-          <span class="comment-count">💬 ${(a.comments.length + loadComments(a.id).length)}</span>
+          <span class="coverage-note">${(a.comments.length + loadComments(a.id).length)} comments</span>
           <span class="read-btn">Read →</span>
         </div>
       </div>
@@ -1115,8 +1177,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   } else {
     renderHome(); // render without ideology
   }
-
-  buildTicker();
 
   // Filter buttons
   document.querySelectorAll('.filter-btn').forEach(btn => {
